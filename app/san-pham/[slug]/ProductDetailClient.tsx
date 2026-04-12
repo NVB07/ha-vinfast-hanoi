@@ -81,7 +81,7 @@ export default function ProductDetailClient({ car, sliderImages }: { car: any; s
                         <div className="p-6 text-[13px]">
                             {car.descript ? (
                                 <div
-                                    className="[&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-4 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mb-3 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mb-2 [&_p]:mb-3 [&_li]:mb-3  [&_ul]:pl-5 [&_ul]:list-disc [&_ol]:pl-5 [&_ol]:list-decimal leading-relaxed  "
+                                    className="[&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-4 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mb-3 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mb-2 [&_p]:mb-3 [&_li]:mb-3 [&_ul]:pl-5 [&_ul]:list-disc [&_ol]:pl-5 [&_ol]:list-decimal leading-relaxed break-words"
                                     dangerouslySetInnerHTML={{ __html: car.descript }}
                                 />
                             ) : (
