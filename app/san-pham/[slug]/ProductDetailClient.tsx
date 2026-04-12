@@ -43,7 +43,7 @@ export default function ProductDetailClient({ car, sliderImages }: { car: any; s
             </div>
 
             {/* Right Column: Information */}
-            <div className="w-full lg:w-1/2 flex flex-col pt-4 lg:pt-0">
+            <div className="w-full lg:w-1/2 flex flex-col pt-4 lg:pt-0 min-w-0">
                 <h1 className="text-2xl md:text-3xl font-bold uppercase text-gray-800 tracking-wide mb-4">VINFAST {car.name}</h1>
 
                 <hr className="w-16 border-t-[3px] border-gray-200 mb-8" />
@@ -81,8 +81,8 @@ export default function ProductDetailClient({ car, sliderImages }: { car: any; s
                         <div className="p-6 text-[13px]">
                             {car.descript ? (
                                 <div
-                                    className="[&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-4 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mb-3 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mb-2 [&_p]:mb-3 [&_li]:mb-3 [&_ul]:pl-5 [&_ul]:list-disc [&_ol]:pl-5 [&_ol]:list-decimal leading-relaxed break-words"
-                                    dangerouslySetInnerHTML={{ __html: car.descript }}
+                                    className="[&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-4 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mb-3 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mb-2 [&_p]:mb-3 [&_li]:mb-3 [&_ul]:pl-5 [&_ul]:list-disc [&_ol]:pl-5 [&_ol]:list-decimal leading-relaxed text-gray-600"
+                                    dangerouslySetInnerHTML={{ __html: car.descript.replace(/&nbsp;/g, ' ') }}
                                 />
                             ) : (
                                 <p className="text-gray-500 italic text-center">Đang cập nhật thông tin ưu đãi...</p>
