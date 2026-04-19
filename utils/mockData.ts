@@ -1,4 +1,4 @@
-export const mockSliders = ["/images/slider/1.jpg", "/images/slider/2.png", "/images/slider/3.png", "/images/slider/4.webp"];
+export const mockSliders = ["/images/slider/1.jpg", "/images/slider/2.webp", "/images/slider/3.webp", "/images/slider/4.webp"];
 
 export const mockHomeCars = [
     {
@@ -125,7 +125,7 @@ export const mockHomeCars = [
     {
         id: 12,
         name: "E BUS",
-        image: "/images/homeCars/ebus.png",
+        image: "/images/homeCars/ebus.webp",
         type: "Car",
         price: "2.800.000.000 VNĐ (NEDC)",
         distance: "~ 250 km (NEDC)",

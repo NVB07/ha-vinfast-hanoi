@@ -4,8 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, User, Phone, ChevronDown } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { createClient } from "@/utils/supabase/server";
+import { cookies } from "next/headers";
 
-export default function Header() {
+export default async function Header() {
+    const cookieStore = await cookies();
+    const supabase = createClient(cookieStore);
+    const { data: settings } = await supabase.from("general_settings").select("*").single();
+    const phone = settings?.phone || settings?.zalo || "1900 23 23 89";
+
     return (
         <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur border-b border-gray-100 shadow-sm">
             <div className="container mx-auto px-4 w-full">
@@ -50,7 +57,11 @@ export default function Header() {
                                                     "EC VAN",
                                                     "E BUS",
                                                 ].map((car) => (
-                                                    <Link key={car} href={`/san-pham/${car.toLowerCase().replace(/\s+/g, "-")}`} className="hover:text-[#0062BD] transition-colors">
+                                                    <Link
+                                                        key={car}
+                                                        href={`/san-pham/${car.toLowerCase().replace(/\s+/g, "-")}`}
+                                                        className="hover:text-[#0062BD] transition-colors"
+                                                    >
                                                         {car}
                                                     </Link>
                                                 ))}
@@ -86,9 +97,9 @@ export default function Header() {
                                         </Link>
                                     </nav>
                                     <div className="mt-auto pt-6 border-t font-semibold">
-                                        <div className="flex items-center gap-2 mb-4">
-                                            <Phone className="w-4 h-4 text-[#0062BD]" /> 1900 23 23 89
-                                        </div>
+                                        <a href={`tel:${phone}`} className="flex items-center gap-2 mb-4 hover:text-[#0062BD] transition-colors">
+                                            <Phone className="w-4 h-4 text-[#0062BD]" /> {phone}
+                                        </a>
                                     </div>
                                 </div>
                             </SheetContent>

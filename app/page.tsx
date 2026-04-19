@@ -12,14 +12,15 @@ export default async function Home() {
     let news = [];
 
     try {
-        const { data: slidersData } = await supabase.from("sliders").select("*").order("created_at", { ascending: false });
-        if (slidersData) sliders = slidersData;
+        const [slidersResult, carsResult, newsResult] = await Promise.all([
+            supabase.from("sliders").select("*").order("created_at", { ascending: false }),
+            supabase.from("cars").select("*").order("created_at", { ascending: false }),
+            supabase.from("news").select("*").order("created_at", { ascending: false }),
+        ]);
 
-        const { data: carsData } = await supabase.from("cars").select("*").order("created_at", { ascending: false });
-        if (carsData) cars = carsData;
-
-        const { data: newsData } = await supabase.from("news").select("*").order("created_at", { ascending: false });
-        if (newsData) news = newsData;
+        if (slidersResult.data) sliders = slidersResult.data;
+        if (carsResult.data) cars = carsResult.data;
+        if (newsResult.data) news = newsResult.data;
     } catch (error) {
         console.error("Lỗi khi kết nối Supabase:", error);
     }

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, useCarousel } from "@/components/ui/carousel";
 
 interface HomeClientProps {
     sliders: any[];
@@ -15,6 +15,34 @@ interface HomeClientProps {
 }
 
 import { mockSliders, mockHomeCars } from "@/utils/mockData";
+
+function SliderArrows() {
+    const { scrollPrev, scrollNext } = useCarousel();
+    return (
+        <>
+            <button
+                type="button"
+                onClick={scrollPrev}
+                aria-label="Previous slide"
+                className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 md:w-12 md:h-12 rounded-full bg-black/20 hover:bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center cursor-pointer border-none outline-none"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M15 18l-6-6 6-6" />
+                </svg>
+            </button>
+            <button
+                type="button"
+                onClick={scrollNext}
+                aria-label="Next slide"
+                className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 md:w-12 md:h-12 rounded-full bg-black/20 hover:bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center cursor-pointer border-none outline-none"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 18l6-6-6-6" />
+                </svg>
+            </button>
+        </>
+    );
+}
 
 export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
     const displaySliders = sliders.length > 0 ? sliders.map((s) => s.image_url) : mockSliders;
@@ -44,14 +72,18 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                             <CarouselItem key={index} className="relative h-[300px] sm:h-[450px] md:h-[650px] lg:h-[750px] w-full">
                                 <a href="#name_registration" className="block w-full h-full relative overflow-hidden">
                                     {/* background blur */}
-                                    <Image src={item} alt="" fill className="object-cover blur-xl scale-110" />
+                                    <Image src={item} alt="" fill className="object-cover blur-xl scale-110" priority={index === 0} loading={index === 0 ? "eager" : "lazy"} sizes="100vw" />
 
                                     {/* main image (FADE REAL) */}
                                     <div className="absolute inset-0 z-10 flex items-center justify-center">
-                                        <img
+                                        <Image
                                             src={item}
                                             alt=""
-                                            className="max-w-full max-h-full object-contain"
+                                            fill
+                                            priority={index === 0}
+                                            loading={index === 0 ? "eager" : "lazy"}
+                                            sizes="100vw"
+                                            className="object-contain"
                                             style={{
                                                 WebkitMaskImage: `
   linear-gradient(to right, transparent, black 15%, black 85%, transparent),
@@ -77,9 +109,7 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                         ))}
                     </CarouselContent>
 
-                    {/* Slider Arrows */}
-                    <CarouselPrevious className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-8 h-8 md:w-12 md:h-12 bg-black/20 hover:bg-black/50 text-white hover:text-white border-none rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-20 flex items-center justify-center [&_svg]:w-6 [&_svg]:h-6" />
-                    <CarouselNext className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 w-8 h-8 md:w-12 md:h-12 bg-black/20 hover:bg-black/50 text-white hover:text-white border-none rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-20 flex items-center justify-center [&_svg]:w-6 [&_svg]:h-6" />
+                    <SliderArrows />
                 </Carousel>
             </section>
 
@@ -128,7 +158,7 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                                 <div className="relative z-10 w-full max-w-4xl">
                                     <div className="flex flex-col items-center">
                                         <div className="relative w-full h-[250px] md:h-[400px]">
-                                            <Image src={model.image} alt={model.name} fill className="object-contain" />
+                                            <Image src={model.image} alt={model.name} fill className="object-contain" sizes="(max-width: 768px) 100vw, 800px" loading="lazy" />
                                         </div>
 
                                         {/* Specs Grid - Specific 4 columns */}
@@ -180,7 +210,7 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                         <div className="flex flex-col gap-4">
                             {/* Promo Image */}
                             <div className="relative flex-1 bg-black rounded-md overflow-hidden group shadow min-h-[200px]">
-                                <Image src="/images/sources/sacxe.webp" alt="Promo" fill className="object-cover group-hover:scale-105 transition-all duration-700" />
+                                <Image src="/images/sources/sacxe.webp" alt="Promo" fill className="object-cover group-hover:scale-105 transition-all duration-700" loading="lazy" sizes="(max-width: 768px) 100vw, 50vw" />
                                 <div className="absolute inset-0 bg-blue-900/30"></div>
                                 <div className="absolute bottom-0 left-0  text-white text-xl  z-10 w-full  p-2 bg-black/50">
                                     <p className="uppercase font-bold">Pin & Trạm sạc ô tô điện</p>
@@ -197,6 +227,8 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                                     alt="Warranty"
                                     fill
                                     className="object-cover group-hover:scale-105 transition-all duration-700"
+                                    loading="lazy"
+                                    sizes="(max-width: 768px) 100vw, 50vw"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 to-transparent"></div>
                                 <div className="absolute bottom-0 left-0 w-full bg-black/50 p-2 text-white    z-10">
@@ -223,6 +255,8 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                                     alt="Charger"
                                     fill
                                     className="object-contain object-bottom group-hover:scale-[1.03] transition-all duration-700"
+                                    loading="lazy"
+                                    sizes="(max-width: 768px) 100vw, 50vw"
                                 />
                             </div>
                         </div>
@@ -259,14 +293,14 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                     </div>
 
                     <div className="md:w-[55%] lg:w-[60%] relative h-[300px] md:h-[500px] w-full flex items-center justify-center md:justify-end relative z-10">
-                        <Image src="/images/sources/vf9mn.png" alt="VinFast VF9 Service" fill className="object-contain md:object-right drop-shadow-2xl z-10" />
+                        <Image src="/images/sources/vf9mn.webp" alt="VinFast VF9 Service" fill className="object-contain md:object-right drop-shadow-2xl z-10" loading="lazy" sizes="(max-width: 768px) 100vw, 60vw" />
                     </div>
                 </div>
             </section>
 
             {/* Spirit Section - Full Image Background */}
             <section className="relative w-full h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden bg-[#222]">
-                <Image src="/images/sources/manhliet.webp" alt="Vietnam Spirit Background" fill className="object-cover" />
+                <Image src="/images/sources/manhliet.webp" alt="Vietnam Spirit Background" fill className="object-cover" loading="lazy" sizes="100vw" />
                 <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-l  from-black/70 via-black/50 to-transparent" />
 
                 <div className="relative container mx-auto px-4 h-full max-w-[1300px] flex items-center justify-end">
@@ -298,6 +332,8 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                                 alt="Store"
                                 fill
                                 className="object-cover group-hover:scale-105 transition-all duration-700 opacity-80"
+                                loading="lazy"
+                                sizes="(max-width: 768px) 100vw, 50vw"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
                             <div className="absolute bottom-6 left-6 text-white flex items-center justify-between w-[90%]">
@@ -313,6 +349,8 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                                 alt="Community"
                                 fill
                                 className="object-cover group-hover:scale-105 transition-all duration-700 opacity-80"
+                                loading="lazy"
+                                sizes="(max-width: 768px) 100vw, 50vw"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
                             <div className="absolute bottom-6 left-6 text-white flex items-center justify-between w-[90%]">
@@ -341,6 +379,8 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                                         alt={n.title}
                                         fill
                                         className="object-cover group-hover:scale-105 transition-all duration-500"
+                                        loading="lazy"
+                                        sizes="(max-width: 768px) 100vw, 50vw"
                                     />
                                     <div className="absolute top-2 left-2 bg-[#0062BD] text-white text-[10px] font-bold px-2 py-1 uppercase rounded-sm">
                                         {n.category || "Tin tức"}
@@ -368,7 +408,7 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
 
             {/* Lead Form */}
             <section className="relative py-16 md:py-24 bg-[#1a1c24] border-t border-zinc-800 flex justify-center overflow-hidden">
-                <Image src="/images/sources/contact.webp" alt="VinFast Registration Background" fill className="object-cover  object-left  opacity-80" />
+                <Image src="/images/sources/contact.webp" alt="VinFast Registration Background" fill className="object-cover  object-left  opacity-80" loading="lazy" sizes="100vw" />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-[#1e3a5a]/60" />
 
                 <div className="relative container mx-auto px-4 max-w-3xl z-10">

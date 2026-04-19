@@ -42,6 +42,11 @@ export function EditCarForm({ mockCar, dbCar, onUpdated }: { mockCar: any; dbCar
             distance: formData.get("distance"),
             slot: formData.get("slot"),
             power: formData.get("power"),
+            price_plus: formData.get("price_plus"),
+            distance_plus: formData.get("distance_plus"),
+            power_plus: formData.get("power_plus"),
+            battery_price: formData.get("battery_price"),
+            overtime_fee: formData.get("overtime_fee"),
             descript: descript,
         };
 
@@ -66,25 +71,59 @@ export function EditCarForm({ mockCar, dbCar, onUpdated }: { mockCar: any; dbCar
             </div>
 
             <div className="w-full grid grid-cols-2 lg:grid-cols-3 gap-2 mb-3">
+                {/* Cột 1: Thông số cơ bản */}
+                <div className="flex flex-col gap-2">
+                    <div>
+                        <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Loại xe</label>
+                        <Input name="type" defaultValue={displayCar.type} className="h-7 text-xs px-2" />
+                    </div>
+                    <div>
+                        <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Số chỗ</label>
+                        <Input name="slot" defaultValue={displayCar.slot} className="h-7 text-xs px-2" />
+                    </div>
+                </div>
+
+                {/* Cột 2: Thông số bản Base / Eco */}
+                <div className="flex flex-col gap-2 bg-blue-50/50 p-2 rounded border border-blue-50/50">
+                    <div>
+                        <label className="block text-[10px] font-semibold text-blue-600 mb-0.5">Giá bản BASE / ECO</label>
+                        <Input name="price" defaultValue={displayCar.price} className="h-7 text-xs px-2 bg-white" />
+                    </div>
+                    <div>
+                        <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Quãng đường (Base/Eco)</label>
+                        <Input name="distance" defaultValue={displayCar.distance} className="h-7 text-xs px-2 bg-white" />
+                    </div>
+                    <div>
+                        <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Công suất (Base/Eco)</label>
+                        <Input name="power" defaultValue={displayCar.power} className="h-7 text-xs px-2 bg-white" />
+                    </div>
+                </div>
+
+                {/* Cột 3: Thông số bản Plus */}
+                <div className="flex flex-col gap-2 bg-rose-50/50 p-2 rounded border border-rose-50/50">
+                    <div>
+                        <label className="block text-[10px] font-semibold text-rose-600 mb-0.5">Giá bản PLUS</label>
+                        <Input name="price_plus" defaultValue={displayCar.price_plus} className="h-7 text-xs px-2 bg-white" />
+                    </div>
+                    <div>
+                        <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Quãng đường (Plus)</label>
+                        <Input name="distance_plus" defaultValue={displayCar.distance_plus} className="h-7 text-xs px-2 bg-white" />
+                    </div>
+                    <div>
+                        <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Công suất (Plus)</label>
+                        <Input name="power_plus" defaultValue={displayCar.power_plus} className="h-7 text-xs px-2 bg-white" />
+                    </div>
+                </div>
+            </div>
+
+            <div className="w-full grid grid-cols-2 gap-2 mb-3">
                 <div>
-                    <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Loại xe</label>
-                    <Input name="type" defaultValue={displayCar.type} className="h-7 text-xs px-2" />
+                    <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Đơn giá sạc pin (VNĐ/kWh)</label>
+                    <Input name="battery_price" defaultValue={displayCar.battery_price} className="h-7 text-xs px-2" placeholder="Ví dụ: 3.858 vnđ / KWh" />
                 </div>
                 <div>
-                    <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Số chỗ</label>
-                    <Input name="slot" defaultValue={displayCar.slot} className="h-7 text-xs px-2" />
-                </div>
-                <div>
-                    <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Giá chỉ từ</label>
-                    <Input name="price" defaultValue={displayCar.price} className="h-7 text-xs px-2" />
-                </div>
-                <div>
-                    <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Quãng đường</label>
-                    <Input name="distance" defaultValue={displayCar.distance} className="h-7 text-xs px-2" />
-                </div>
-                <div>
-                    <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Công suất</label>
-                    <Input name="power" defaultValue={displayCar.power} className="h-7 text-xs px-2" />
+                    <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Phí chiếm chỗ sạc (VNĐ/phút)</label>
+                    <Input name="overtime_fee" defaultValue={displayCar.overtime_fee} className="h-7 text-xs px-2" placeholder="Ví dụ: 1000 vnđ / phút" />
                 </div>
             </div>
 
@@ -107,6 +146,15 @@ export default function AdminPage() {
     const [sliders, setSliders] = useState<any[]>([]);
     const [cars, setCars] = useState<any[]>([]);
     const [news, setNews] = useState<any[]>([]);
+    const [settings, setSettings] = useState<any>({
+        phone: "",
+        address: "",
+        facebook: "",
+        tiktok: "",
+        youtube: "",
+        email: "",
+        zalo: "",
+    });
 
     useEffect(() => {
         fetchData();
@@ -121,6 +169,22 @@ export default function AdminPage() {
 
         const { data: nData } = await supabase.from("news").select("*").order("created_at", { ascending: false });
         if (nData) setNews(nData);
+
+        const { data: setts } = await supabase.from("general_settings").select("*").single();
+        if (setts) setSettings(setts);
+    };
+
+    const handleSettingsSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const { error } = await supabase.from("general_settings").upsert([{ id: 1, ...settings }]);
+            if (error) throw error;
+            alert("Lưu Cấu hình thành công!");
+        } catch (error: any) {
+            alert("Lỗi: " + error.message);
+        }
+        setLoading(false);
     };
 
     // SLIDER HANDLERS
@@ -194,6 +258,9 @@ export default function AdminPage() {
                     <TabsTrigger value="news" className="flex-1 px-4 py-2 text-sm font-semibold whitespace-nowrap data-[state=active]:bg-white rounded-md shadow-sm">
                         Quản lý Tin Tức
                     </TabsTrigger>
+                    <TabsTrigger value="settings" className="flex-1 px-4 py-2 text-sm font-semibold whitespace-nowrap data-[state=active]:bg-white rounded-md shadow-sm">
+                        Cấu hình chung
+                    </TabsTrigger>
                 </TabsList>
 
                 {/* TAB SLIDERS */}
@@ -239,8 +306,8 @@ export default function AdminPage() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-                        {mockHomeCars.map(mockCar => {
-                            const dbCar = cars.find(c => c.id === mockCar.id);
+                        {mockHomeCars.map((mockCar) => {
+                            const dbCar = cars.find((c) => c.id === mockCar.id);
                             return <EditCarForm key={mockCar.id} mockCar={mockCar} dbCar={dbCar} onUpdated={fetchData} />;
                         })}
                     </div>
@@ -300,6 +367,51 @@ export default function AdminPage() {
                                 </div>
                             </div>
                         ))}
+                    </div>
+                </TabsContent>
+
+                {/* TAB SETTINGS */}
+                <TabsContent value="settings">
+                    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-8 max-w-2xl mx-auto">
+                        <h2 className="text-xl font-bold mb-4">Cấu Hình Chung</h2>
+                        <form onSubmit={handleSettingsSubmit} className="flex flex-col gap-4">
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Số điện thoại / Hotline</label>
+                                <Input value={settings.phone || ""} onChange={(e) => setSettings({ ...settings, phone: e.target.value })} />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Số Zalo (vd: 0345726001)</label>
+                                <Input value={settings.zalo || ""} onChange={(e) => setSettings({ ...settings, zalo: e.target.value })} />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Email</label>
+                                <Input value={settings.email || ""} onChange={(e) => setSettings({ ...settings, email: e.target.value })} />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Địa chỉ (Có thể nhập nhiều dòng)</label>
+                                <textarea
+                                    rows={4}
+                                    className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                    value={settings.address || ""}
+                                    onChange={(e) => setSettings({ ...settings, address: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Facebook Link</label>
+                                <Input value={settings.facebook || ""} onChange={(e) => setSettings({ ...settings, facebook: e.target.value })} />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">TikTok Link</label>
+                                <Input value={settings.tiktok || ""} onChange={(e) => setSettings({ ...settings, tiktok: e.target.value })} />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">YouTube Link</label>
+                                <Input value={settings.youtube || ""} onChange={(e) => setSettings({ ...settings, youtube: e.target.value })} />
+                            </div>
+                            <Button type="submit" disabled={loading} className="w-full bg-[#0088FF] hover:bg-[#0066CC]">
+                                {loading ? "Đang lưu..." : "Lưu Thay Đổi"}
+                            </Button>
+                        </form>
                     </div>
                 </TabsContent>
             </Tabs>

@@ -5,6 +5,10 @@ import { mockHomeCars } from "@/utils/mockData";
 import fs from "fs";
 import path from "path";
 import ProductDetailClient from "./ProductDetailClient";
+import VF3Details from "./VF3Details";
+import VF5Details from "./VF5Details";
+import CarPrivileges from "./CarPrivileges";
+import VF6Details from "./VF6Details";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
@@ -87,6 +91,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <div className="container mx-auto px-4 max-w-6xl flex gap-10 items-start lg:flex-row flex-col">
                 <ProductDetailClient car={car} sliderImages={sliderImages} />
             </div>
+
+            {/* Phần hiển thị chi tiết chung - Các đặc quyền */}
+            <CarPrivileges car={car} />
+
+            {/* Phần hiển thị chi tiết riêng cho từng dòng xe (nếu có) */}
+            <VF3Details car={car} />
+            <VF5Details car={car} />
+            <VF6Details car={car} />
         </div>
     );
 }

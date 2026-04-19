@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layouts/Header";
 import Footer from "@/components/layouts/Footer";
+import ProgressBarProvider from "@/components/ProgressBarProvider";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -15,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    title: "VinFast Hà Nội | Bão Giá Ô Tô Điện - Đăng Ký Lái Thử Ngay",
+    title: "VinFast Hà Nội | Báo Giá Ô Tô Điện - Đăng Ký Lái Thử Ngay",
     description:
         "Đại lý phân phối xe ô tô điện VinFast (VF 3, VF 5, VF 6, VF 7, VF 8, VF 9) chính hãng tại Hà Nội. Cập nhật bảng giá lăn bánh mới nhất, chính sách cho thuê ưu đãi.",
     keywords: ["VinFast", "VinFast Hà Nội", "Ô tô điện", "VF 3", "VF 5", "VF 6", "VF 7", "VF 8", "VF 9", "Báo giá lăn bánh VinFast", "Giá xe VinFast"],
@@ -45,6 +46,7 @@ export default function RootLayout({
     return (
         <html lang="vi" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
             <body className="min-h-full flex flex-col font-sans antialiased text-[#333]">
+                <ProgressBarProvider />
                 <Header />
                 {children}
                 <Footer />
