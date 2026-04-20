@@ -85,7 +85,7 @@ export default function VF5Details({ car }: { car: any }) {
                         sizes="(max-width: 1200px) 100vw, 1200px"
                     />
                     {/* Overlay Bảng Gía */}
-                    <div className="relative z-10 bg-white/95 backdrop-blur-md rounded-[2.5rem] shadow-2xl p-6 md:p-8 w-[95%] sm:w-[85%] md:w-[450px] my-10">
+                    <div className="relative z-10 bg-white/40 backdrop-blur-md rounded-[2.5rem] shadow-2xl p-6 md:p-8 w-[95%] sm:w-[85%] md:w-[450px] my-10">
                         <h3 className="text-2xl md:text-3xl font-black uppercase text-gray-800 text-center mb-1 tracking-wide">VF5 PLUS BAO GỒM PIN</h3>
                         <p className="text-center font-black text-gray-800 mb-6 md:mb-8 text-sm md:text-base pb-6">
                             Giá: <span className="text-[#cc0000] text-xl md:text-2xl">{car.price}</span>
@@ -93,63 +93,63 @@ export default function VF5Details({ car }: { car: any }) {
 
                         <div className="flex flex-col gap-[9px] md:gap-3 text-[10px] md:text-xs px-2 md:px-0">
                             <div className="flex justify-between border-b border-gray-300/40 pb-2">
-                                <span className="text-gray-500 font-semibold w-[40%]">Động cơ:</span>
+                                <span className="text-black font-semibold w-[40%]">Động cơ:</span>
                                 <span className="text-gray-800 font-bold w-[60%] text-right">01 Motor Điện 136 Hp</span>
                             </div>
                             <div className="flex justify-between border-b border-gray-300/40 pb-2">
-                                <span className="text-gray-500 font-semibold w-[40%]">Hộp số:</span>
+                                <span className="text-black font-semibold w-[40%]">Hộp số:</span>
                                 <span className="text-gray-800 font-bold w-[60%] text-right">Tự động</span>
                             </div>
                             <div className="flex justify-between border-b border-gray-300/40 pb-2">
-                                <span className="text-gray-500 font-semibold w-[40%]">Dẫn động:</span>
+                                <span className="text-black font-semibold w-[40%]">Dẫn động:</span>
                                 <span className="text-gray-800 font-bold w-[60%] text-right">Cầu trước</span>
                             </div>
                             <div className="flex justify-between border-b border-gray-300/40 pb-2">
-                                <span className="text-gray-500 font-semibold w-[40%]">Pin:</span>
+                                <span className="text-black font-semibold w-[40%]">Pin:</span>
                                 <span className="text-gray-800 font-bold w-[60%] text-right">37,23 KW</span>
                             </div>
                             <div className="flex justify-between border-b border-gray-300/40 pb-2">
-                                <span className="text-gray-500 font-semibold w-[40%]">Quãng đường:</span>
+                                <span className="text-black font-semibold w-[40%]">Quãng đường:</span>
                                 <span className="text-gray-800 font-bold w-[60%] text-right">300 km</span>
                             </div>
                             <div className="flex justify-between border-b border-gray-300/40 pb-2">
-                                <span className="text-gray-500 font-semibold w-[40%] shrink-0">Thời gian sạc pin:</span>
+                                <span className="text-black font-semibold w-[40%] shrink-0">Thời gian sạc pin:</span>
                                 <span className="text-gray-800 font-bold w-[60%] text-right">10%-70%: 30 phút</span>
                             </div>
                             <div className="flex justify-between border-b border-gray-300/40 pb-2">
-                                <span className="text-gray-500 font-semibold w-[40%]">Vành:</span>
+                                <span className="text-black font-semibold w-[40%]">Vành:</span>
                                 <span className="text-gray-800 font-bold w-[60%] text-right">Đúc 17 inh</span>
                             </div>
                             <div className="flex justify-between border-b border-gray-300/40 pb-2">
-                                <span className="text-gray-500 font-semibold w-[40%]">Đèn:</span>
+                                <span className="text-black font-semibold w-[40%]">Đèn:</span>
                                 <span className="text-gray-800 font-bold w-[60%] text-right">Halogen projector</span>
                             </div>
                             <div className="flex justify-between border-b border-gray-300/40 pb-2">
-                                <span className="text-gray-500 font-semibold w-[40%]">Chìa khoá:</span>
+                                <span className="text-black font-semibold w-[40%]">Chìa khoá:</span>
                                 <span className="text-gray-800 font-bold w-[60%] text-right">Điều khiển</span>
                             </div>
                             <div className="flex justify-between border-b border-gray-300/40 pb-2">
-                                <span className="text-gray-500 font-semibold w-[40%]">Ghế:</span>
+                                <span className="text-black font-semibold w-[40%]">Ghế:</span>
                                 <span className="text-gray-800 font-bold w-[60%] text-right">Bọc da, Chỉnh cơ</span>
                             </div>
                             <div className="flex justify-between border-b border-gray-300/40 pb-2">
-                                <span className="text-gray-500 font-semibold w-[40%]">Điều hoà:</span>
+                                <span className="text-black font-semibold w-[40%]">Điều hoà:</span>
                                 <span className="text-gray-800 font-bold w-[60%] text-right">Chỉnh cơ</span>
                             </div>
                             <div className="flex justify-between border-b border-gray-300/40 pb-2">
-                                <span className="text-gray-500 font-semibold w-[40%]">Màn hình:</span>
+                                <span className="text-black font-semibold w-[40%]">Màn hình:</span>
                                 <span className="text-gray-800 font-bold w-[60%] text-right">8 inh 4 loa</span>
                             </div>
                             <div className="flex justify-between border-b border-gray-300/40 pb-2">
-                                <span className="text-gray-500 font-semibold w-[40%]">Sạc điện thoại:</span>
+                                <span className="text-black font-semibold w-[40%]">Sạc điện thoại:</span>
                                 <span className="text-gray-800 font-bold w-[60%] text-right">Thường</span>
                             </div>
                             <div className="flex justify-between border-b border-gray-300/40 pb-2">
-                                <span className="text-gray-500 font-semibold w-[40%]">An toàn:</span>
+                                <span className="text-black font-semibold w-[40%]">An toàn:</span>
                                 <span className="text-gray-800 font-bold w-[60%] text-right max-w-full">6 túi khí, Chống lật, Cam lùi, Áp suất lốp</span>
                             </div>
                             <div className="flex justify-between pb-2">
-                                <span className="text-gray-500 font-semibold w-[40%]">Cảnh báo:</span>
+                                <span className="text-black font-semibold w-[40%]">Cảnh báo:</span>
                                 <span className="text-gray-800 font-bold w-[60%] text-right max-w-full">điểm mù, phương tiện phía sau</span>
                             </div>
                         </div>

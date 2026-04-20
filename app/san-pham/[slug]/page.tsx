@@ -9,6 +9,8 @@ import VF3Details from "./VF3Details";
 import VF5Details from "./VF5Details";
 import CarPrivileges from "./CarPrivileges";
 import VF6Details from "./VF6Details";
+import VF7Details from "./VF7Details";
+import VF8Details from "./VF8Details";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
@@ -99,6 +101,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <VF3Details car={car} />
             <VF5Details car={car} />
             <VF6Details car={car} />
+            <VF7Details car={car} />
+            <VF8Details car={car} />
         </div>
     );
 }

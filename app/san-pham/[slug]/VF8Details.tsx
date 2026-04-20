@@ -2,62 +2,97 @@ import React from "react";
 import Image from "next/image";
 
 const exteriorFeatures = [
-    { image: "3.webp", title: "Đầu xe", desc: "Thiết kế kiểu bo tròn, tạo dáng vẻ thân thiện và khí động học cao" },
-    { image: "4.webp", title: "Cản trước", desc: "Sử dụng nhựa nhám, có khe lấy gió làm mát cho điều hoà và các chi tiết khác, Radar nằm trong gói ADAS cũng tích hợp" },
-    { image: "5.webp", title: "Logo Vinfast", desc: "Logo chữ V cách điệu và 2 dải đèn led tạo nhận diện không thể lẫn vào đâu được" },
+    {
+        image: "3.webp",
+        title: "Đầu xe",
+        desc: "Giảm lực cản không khí và tăng hiệu quả vận hành, đồng thời mang lại vẻ ngoài hiện đại và mạnh mẽ.",
+    },
+    { image: "4.webp", title: "Đèn pha", desc: "Sử dụng công nghệ full cho khả năng chiếu sáng đỉnh cao nhất" },
+    { image: "5.webp", title: "Cản trước", desc: "Thiết kế đơn giản, với các đường nổi khối to bản tạo ánh nhìn “cơ bắp” cho mẫu xe SUV cỡ trung" },
     {
         image: "6.webp",
-        title: "Cụm đèn",
-        desc: "Sử dụng kiểu đèn Led kết hợp projector, cho hiệu quả chiếu sáng tuyệt vời, nâng cao tính thẩm mỹ, dải đèn xi nhan led cực đẹp mắt",
+        title: "Thân xe",
+        desc: "Thiết kế khá cân đối giữa chiều cao và chiều dài, thân xe cao lớn và đậm chất SUV",
     },
-    { image: "7.webp", title: "Thân xe", desc: "Với định vị phân khúc B-SUV, VF6 cho một cảm nhận khá lanh lẹ, thanh thoát, cân đối" },
-    { image: "8.webp", title: "Gương chiếu hậu", desc: "Thiết kế 2 tone màu, hiện đại thanh thoát, tích hợp đủ các tiện ích thông minh, hiện đại" },
-    { image: "9.webp", title: "Mâm xe bản Plus", desc: "Dễ dàng nhận mâm xe VF6 thực sự “khổng lồ” với kích thước 19 inh cho bản Plus. Kích thước này là lớn nhất" },
+    {
+        image: "7.jpg",
+        title: "Mâm xe bản Lux",
+        desc: "Kích thước lến tới 20 inh, thiết kế kiểu 5 chấu kép, 2 tone màu thanh thanh thoát, thể thao",
+    },
+    {
+        image: "8.jpg",
+        title: "Mâm xe bản Lux Plus",
+        desc: "Kích thước lến tới 20 inh, thiết kế kiểu 5 chấu kép, có mạ vàng trang trí thượng hạng",
+    },
+    {
+        image: "9.webp",
+        title: "Mâm xe bản S",
+        desc: "Kích thước tới 19 inh, các chấu to bản hơn, tạo hình kiểu cánh quạt, tạo hiệu ứng đẹp mắt khi di chuyển",
+    },
     {
         image: "10.webp",
-        title: "Mâm xe bản Eco",
-        desc: "Mâm phiên bản eco với sự đơn giản và kích thước khiên tốn là 17 inh. Tuy nhiên cũng không hề kém cạnh các đối thủ trong phân khúc",
+        title: "Gương chiếu hậu",
+        desc: "Tự động lưu vị trí theo thói quen của chủ xe, tích hợp đèn báo rẽ và cảnh báo điểm mù tăng tăng cường sự an toàn cho Khách hàng.",
     },
-    { image: "11.webp", title: "Đuôi xe", desc: "Thể hiện sự táo bạo với nhiều đường dập nổi chạy ngang đuôi xe, tăng vẻ bề thế của 1 mẫu SUV" },
-    { image: "12.webp", title: "Cản sau", desc: "Được tạo hình cơ bản, nhưng lại nổi bật nhờ tạo hình khối sơn màu thân xe kéo dài, 4 cảm biến lùi" },
-    { image: "13.webp", title: "Đèn định vị sau", desc: "Dải led định vị đặc trưng của Vinfast, cũng giúp nhận diện đặc trưng và hiện đại hơn" },
+    { image: "11.webp", title: "Đuôi xe", desc: "Thoáng nhìn đã thấy ngay sự bề thế, vững chãi nhờ thiết kế các đường dập nổi chạy ngang" },
+    { image: "12.webp", title: "Đèn định vị sau", desc: "Vẫn là kiểu tạo hình chữ V cách điệu với 2 dải led chạy dài 2 bên hông nối vào tới logo ở gữa cốp xe" },
+    { image: "13.webp", title: "Đèn xi nhan", desc: "Sử dụng công nghệ led, cho việc phát tín hiệu chính xác về thời gian và tính thẩm mỹ cao" },
+    { image: "14.webp", title: "Cản sau", desc: "Khá đơn giản với 2 tone màu, tích hợp cảm biến lùi" },
 ];
 
 const interiorFeatures = [
-    { image: "14.webp", title: "Khoang lái", desc: "Có phần tối giản hoá, tinh tế, không gian hướng tới vị trí người lái" },
     {
         image: "15.webp",
-        title: "Màn hình trung tâm",
-        desc: "Màn hình kích thước tới 12,9 inh, hiển thị sắc nét, tích hợp đủ các kết nối thông minh, hiển thị các thông tin vận hành xe đi kèm hệ giải trí 8 loa cao cấp",
+        title: "Khoang lái bản Lux plus",
+        desc: "Sử dụng tone màu chủ đạo là màu đen, VF8 Lux plus cho thấy sự khác biệt về độ cao cấp và sang trọng",
     },
-    { image: "16.webp", title: "Vô lăng", desc: "Thiết kế kiểu khá to bản và có D-cut giúp người lái thoải mái hơn" },
     {
-        image: "17.webp",
-        title: "Ghế ngồi bản Plus",
-        desc: "Tất cả đều được bọc da cao cấp, có phối chỉ khâu khác màu tạo các điểm nhấn đơn giản nhưng khá hài hoà thị giác",
+        image: "16.webp",
+        title: "Màn hình trung tâm",
+        desc: "Màn hình kích thước tới 15,6 inh, hiển thị sắc nét, tích hợp đủ các kết nối thông minh, hiển thị các thông tin vận hành xe",
     },
-    { image: "18.webp", title: "Ghế ngồi bản Eco", desc: "Cũng được bọc da tương tự trên bản Plus nhưng về chất liệu thì ở mức cơ bản hơn" },
-    { image: "19.webp", title: "Cần số dạng nút bấm", desc: "Khu vực trung tâm được khéo léo biến đổi thành cần số với các phím bấm đẹp mắt, khác lạ, đầy thú vị" },
-    { image: "20.webp", title: "Nút chỉnh volume", desc: "Được thiết kế khá tối giản theo ngôn ngữ chung của xe, nằm ở ngay trước bệ tỳ tay vô cùng thuận tiện" },
-    { image: "21.webp", title: "Hàng ghế sau", desc: "Không gian rộng rãi là điều đáng tự hào của VF6, ngoài ra cũng có tích hợp bệ tỳ tay to bản" },
-    { image: "22.webp", title: "Khoang hành lý", desc: "Với thể khi bình thường là 350 lít và tăng lên tới 1275 lít khi gập phẳng hàng ghế sau" },
+    {
+        image: "17.jpg",
+        title: "Vô lăng",
+        desc: "Không chỉ tích hợp khả năng sưởi, vô lăng của VF 8 còn có thể ghi nhớ và tự động điều chỉnh theo thói quen lái xe của bạn",
+    },
+    {
+        image: "18.webp",
+        title: "Điều hòa",
+        desc: "Sở hữu kiểu điều hoà tự động 2 vùng với giao diện siêu tối giản giúp người dùng dễ dàng thao tác",
+    },
+    { image: "19.webp", title: "Ghế ngồi", desc: "Tất cả đều được bọc da cao cấp, ghế lái chỉnh điện 12 hướng" },
+    { image: "20.jpg", title: "Hàng ghế sau", desc: "Không gian vô cùng rộng rãi, tích hơp bệ tỳ tay cho những chuyến đi xa thoải mái hơn" },
+    { image: "21.jpg", title: "Cần số", desc: "Dạng nút bấm rất đặc trưng cửa Vinfast, nâng cáo tính thẩm mỹ, hiện đại và công nghệ" },
+    { image: "22.webp", title: "Trần kính", desc: "Tích hợp rèm điện, điều khiển đóng mở bằng giọng nói" },
+    { image: "23.webp", title: "Khoang hành lý", desc: "Với thể tích 376 lít và tăng lên tới 1.373 lít khi gập phẳng hàng ghế sau" },
+    {
+        image: "24.jpg",
+        title: "Khoang hành lý phía trước",
+        desc: "Với dung tích chứa đồ không quá lớn nhưng đây cũng là 1 trong những tiện ích rất thú vị và khác biệt của VF8",
+    },
 ];
 
 const performanceFeatures = [
     {
-        image: "23.webp",
-        title: "Pin VF6",
-        desc: "Sử dụng khối pin hiện đại LFP với dung lượng 59,6 KWh, VF6 cho sự khả năng di chuyển tới 399 km cho mỗi lần sạc đầy pin",
-    },
-    {
         image: "24.webp",
-        title: "Động cơ VF6",
-        desc: "Với động cơ điện công suất 204 mã lực, 310 Nm mô men xoắn, VF6 dễ dàng cho người lái “dính ghế” sau mỗi cú nhấp ga",
+        title: "Pin VF8",
+        desc: "Sử dụng khối pin hiện đại LFP với dung lượng 88,8 KWh, VF8 cho sự khả năng di chuyển tới 471 km cho mỗi lần sạc đầy pin",
     },
     {
         image: "25.webp",
-        title: "Sạc pin VF6",
-        desc: "Theo công bố của Vinfast, VF6 có khả năng sạc nhanh từ 10%-70% chỉ trong vòng 24 phút và 9 giờ đối với sạc thường tới 100%",
+        title: "Động cơ VF8",
+        desc: "Theo công bố của Vinfast, VF8 có khả năng sạc siêu nhanh từ 10%-70% chỉ trong vòng 31 phút và 8 giờ đối với sạc nhanh 11 KW từ 10% – 100%",
+    },
+    {
+        image: "20.webp",
+        title: "Sạc pin VF8",
+        desc: "Theo công bố của Vinfast, VF8 có khả năng sạc siêu nhanh từ 10%-70% chỉ trong vòng 24 phút và 8 giờ đối với sạc nhanh 11 KW từ 10% – 100%",
+    },
+    {
+        image: "26.jpg",
+        title: "Vận hành mạnh mẽ",
+        desc: "Với động cơ điện công suất 402 mã lực, VF8 cho khả năng vận hành siêu linh hoạt, nhẹ nhàng, đạt tốc độ 100km/h chỉ trong hơn 5s. Cảm giác lái chính xác, đầm chắc",
     },
 ];
 
@@ -76,12 +111,12 @@ const safetyFeatures = [
     {
         image: "30.webp",
         title: "Túi khí",
-        desc: "Với tiêu chuẩn an toàn khắt khe, VF6 trang bị tới 6 túi khí an toàn cho hành khách với bản Plus và 4 túi khi cho bản Eco",
+        desc: "Với tiêu chuẩn an toàn khắt khe, VF8 trang bị tới 11 túi khí an toàn cho hành khách với bản Plus và 6 túi khí cho bản Eco",
     },
     {
         image: "31.webp",
         title: "Cảm biến đỗ xe",
-        desc: "VF6 được trang bị 4 cảm biến đỗ xe phía trước và 4 cảm biến phía sau giúp việc ra vào bãi đỗ trở nên vô cùng an toàn",
+        desc: "VF8 được trang bị 4 cảm biến đỗ xe phía trước và 4 cảm biến phía sau giúp việc ra vào bãi đỗ trở nên vô cùng an toàn",
     },
     {
         image: "32.jpg",
@@ -120,8 +155,8 @@ const safetyFeatures = [
     },
 ];
 
-export default function VF6Details({ car }: { car: any }) {
-    if (!car || !car.name.toUpperCase().includes("VF 6")) return null;
+export default function VF8Details({ car }: { car: any }) {
+    if (!car || !car.name.toUpperCase().includes("VF 8")) return null;
 
     return (
         <div className="container mx-auto px-4 max-w-6xl mt-12 flex flex-col gap-12">
@@ -130,15 +165,15 @@ export default function VF6Details({ car }: { car: any }) {
                 <div className="flex items-center justify-center gap-4 mb-8">
                     <div className="h-px bg-gray-200 flex-1"></div>
                     <h2 className="text-xl md:text-2xl font-bold uppercase text-gray-800 text-center tracking-wide px-4 whitespace-nowrap">
-                        BẢNG GIÁ CÁC PHIÊN BẢN VINFAST VF6
+                        BẢNG GIÁ CÁC PHIÊN BẢN VINFAST VF8
                     </h2>
                     <div className="h-px bg-gray-200 flex-1"></div>
                 </div>
 
                 <div className="w-full relative overflow-hidden rounded-2xl flex items-center justify-center min-h-[700px] mb-8 group bg-gray-50">
                     <Image
-                        src="/images/cars/VF6/details/1.webp"
-                        alt="Bảng giá VF6"
+                        src="/images/cars/VF8/details/1.webp"
+                        alt="Bảng giá VF8"
                         fill
                         className="object-cover z-0 group-hover:scale-105 transition-transform duration-700"
                         sizes="(max-width: 1200px) 100vw, 1200px"
@@ -147,7 +182,7 @@ export default function VF6Details({ car }: { car: any }) {
                     <div className="relative z-10 flex flex-col md:flex-row gap-6 w-[95%] max-w-5xl my-10">
                         {/* Cột ECO */}
                         <div className="flex-1 bg-white/40 backdrop-blur-md rounded-[2.5rem] shadow-2xl p-6 md:p-8">
-                            <h3 className="text-xl md:text-2xl font-black uppercase text-gray-800 text-center mb-1 tracking-wide">VF6 ECO BAO GỒM PIN</h3>
+                            <h3 className="text-xl md:text-2xl font-black uppercase text-gray-800 text-center mb-1 tracking-wide">VF8 ECO Bao gồm pin</h3>
                             <p className="text-center font-black text-gray-800 mb-6 md:mb-8 text-sm md:text-base pb-6">
                                 Giá: <span className="text-[#cc0000] text-xl md:text-2xl">{car.price || "689.000.000 VNĐ"}</span>
                             </p>
@@ -155,7 +190,7 @@ export default function VF6Details({ car }: { car: any }) {
                             <div className="flex flex-col gap-[9px] md:gap-3 text-[10px] md:text-xs px-2 md:px-0">
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%]">Động cơ:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right">{car.power || "01 Motor Điện 136 Hp"}</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right">{car.power || "02 Motor Điện 402 Hp"}</span>
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%]">Hộp số:</span>
@@ -163,27 +198,27 @@ export default function VF6Details({ car }: { car: any }) {
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%]">Dẫn động:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right">Cầu trước</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right">2 cầu AWD</span>
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%]">Pin:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right">59,6 KW</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right">88,8 KW</span>
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%]">Quãng đường:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right">{car.distance || "399 km"}</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right">{car.distance || "460 – 510 km"}</span>
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%] shrink-0">Thời gian sạc pin:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right">10%-70%: 24 phút</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right">10%-70% 31 phút</span>
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%]">Vành:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right">Đúc 17 inh</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right">Đúc 20 inh</span>
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%]">Đèn:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right">Led</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right">LED</span>
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%]">Chìa khoá:</span>
@@ -191,31 +226,35 @@ export default function VF6Details({ car }: { car: any }) {
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%]">Ghế:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right">Bọc da, Chỉnh cơ</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right">Da thật, Chỉnh điện 12h, Sưởi + Mát + Nhớ</span>
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%]">Điều hoà:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right">Tự động 1 vùng</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right">Tự động 2 vùng</span>
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%]">Màn hình:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right">12,9 inh 6 loa</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right">15,6 inh 10 loa</span>
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
-                                    <span className="text-black font-semibold w-[40%]">Sạc điện thoại:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right">Thường</span>
+                                    <span className="text-black font-semibold w-[40%]">Cửa sổ trời:</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right">Rộng</span>
+                                </div>
+                                <div className="flex justify-between border-b border-gray-300/40 pb-2">
+                                    <span className="text-black font-semibold w-[40%]">Cốp:</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right">Chỉnh điện</span>
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%]">An toàn:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right max-w-full">4 túi khí, Chống lật, Cam 360, Áp suất lốp</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right max-w-full">11 túi khí, Cam 360, Cảnh báo điểm mù</span>
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
-                                    <span className="text-black font-semibold w-[40%]">Cảnh báo:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right max-w-full">điểm mù</span>
+                                    <span className="text-black font-semibold w-[40%]">Hỗ trợ lái ADAS:</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right max-w-full">Full</span>
                                 </div>
                                 <div className="flex justify-between pb-2">
-                                    <span className="text-black font-semibold w-[40%]">Lùi chuồng tự động, Đọc biển giao thông:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right max-w-full">Không</span>
+                                    <span className="text-black font-semibold w-[40%]">Lùi chuồng tự động, đọc biển giao thông:</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right max-w-full">Full</span>
                                 </div>
                             </div>
                             <div className="mt-6 md:mt-8 flex justify-center px-4">
@@ -227,15 +266,15 @@ export default function VF6Details({ car }: { car: any }) {
 
                         {/* Cột PLUS */}
                         <div className="flex-1 bg-white/40 backdrop-blur-md rounded-[2.5rem] shadow-2xl p-6 md:p-8">
-                            <h3 className="text-xl md:text-2xl font-black uppercase text-gray-800 text-center mb-1 tracking-wide">VF6 PLUS BAO GỒM PIN</h3>
+                            <h3 className="text-xl md:text-2xl font-black uppercase text-gray-800 text-center mb-1 tracking-wide">VF8 PLUS Bao gồm pin</h3>
                             <p className="text-center font-black text-gray-800 mb-6 md:mb-8 text-sm md:text-base pb-6">
-                                Giá: <span className="text-[#cc0000] text-xl md:text-2xl">{car.price_plus || "749.000.000 VNĐ"}</span>
+                                Giá: <span className="text-[#cc0000] text-xl md:text-2xl">{car.price_plus || "949.000.000 VNĐ"}</span>
                             </p>
 
                             <div className="flex flex-col gap-[9px] md:gap-3 text-[10px] md:text-xs px-2 md:px-0">
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%]">Động cơ:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right">{car.power_plus || "01 Motor Điện 204 Hp"}</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right">{car.power || "02 Motor Điện 402 Hp"}</span>
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%]">Hộp số:</span>
@@ -243,27 +282,27 @@ export default function VF6Details({ car }: { car: any }) {
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%]">Dẫn động:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right">Cầu trước</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right">2 cầu AWD</span>
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%]">Pin:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right">59,6 KW</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right">88,8 KW</span>
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%]">Quãng đường:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right">{car.distance_plus || "381 km"}</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right">{car.distance || "460 – 510 km"}</span>
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%] shrink-0">Thời gian sạc pin:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right">10%-70%: 24 phút</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right">10%-70% 31 phút</span>
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%]">Vành:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right">Đúc 19 inh</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right">Đúc 20 inh</span>
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%]">Đèn:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right">Led</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right">LED</span>
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%]">Chìa khoá:</span>
@@ -271,7 +310,7 @@ export default function VF6Details({ car }: { car: any }) {
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%]">Ghế:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right">Bọc da, Chỉnh điện, Thông gió</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right">Da thật, Chỉnh điện 12h, Sưởi + Mát + Nhớ</span>
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%]">Điều hoà:</span>
@@ -279,23 +318,27 @@ export default function VF6Details({ car }: { car: any }) {
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%]">Màn hình:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right">12,9 inh 8 loa</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right">15,6 inh 10 loa</span>
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
-                                    <span className="text-black font-semibold w-[40%]">Sạc điện thoại:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right">Thường</span>
+                                    <span className="text-black font-semibold w-[40%]">Cửa sổ trời:</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right">Rộng</span>
+                                </div>
+                                <div className="flex justify-between border-b border-gray-300/40 pb-2">
+                                    <span className="text-black font-semibold w-[40%]">Cốp:</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right">Chỉnh điện</span>
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                     <span className="text-black font-semibold w-[40%]">An toàn:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right max-w-full">8 túi khí, Chống lật, Cam 360, Áp suất lốp</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right max-w-full">11 túi khí, Cam 360, Cảnh báo điểm mù</span>
                                 </div>
                                 <div className="flex justify-between border-b border-gray-300/40 pb-2">
-                                    <span className="text-black font-semibold w-[40%]">Cảnh báo điểm mù, ADAS:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right max-w-full">Full tính năng</span>
+                                    <span className="text-black font-semibold w-[40%]">Hỗ trợ lái ADAS:</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right max-w-full">Full</span>
                                 </div>
                                 <div className="flex justify-between pb-2">
-                                    <span className="text-black font-semibold w-[40%]">Lùi chuồng tự động, Đọc biển giao thông:</span>
-                                    <span className="text-gray-800 font-bold w-[60%] text-right max-w-full">Có</span>
+                                    <span className="text-black font-semibold w-[40%]">Lùi chuồng tự động, đọc biển giao thông:</span>
+                                    <span className="text-gray-800 font-bold w-[60%] text-right max-w-full">Full</span>
                                 </div>
                             </div>
                             <div className="mt-6 md:mt-8 flex justify-center px-4">
@@ -309,8 +352,8 @@ export default function VF6Details({ car }: { car: any }) {
 
                 <div className="w-full flex justify-center mb-8">
                     <Image
-                        src="/images/cars/VF6/details/2.webp"
-                        alt="Hình ảnh đuôi xe VF6 ngang"
+                        src="/images/cars/VF8/details/2.webp"
+                        alt="Hình ảnh đuôi xe VF8 ngang"
                         width={1200}
                         height={800}
                         className="w-full h-auto object-contain"
@@ -322,11 +365,10 @@ export default function VF6Details({ car }: { car: any }) {
             {/* KHỐI 3: THIẾT KẾ NGOẠI THẤT */}
             <div className="mt-10 mb-8 max-w-5xl mx-auto w-full">
                 <div className="mb-10 text-center md:text-left">
-                    <h2 className="text-2xl md:text-3xl font-bold uppercase text-gray-800 mb-3 tracking-wide">THIẾT KẾ NGOẠI THẤT VINFAST VF6</h2>
-                    <h3 className="text-lg md:text-xl font-bold text-[#cc0000] mb-4"> Triết lý thiết kế “Cặp đối lập tự nhiên”</h3>
+                    <h2 className="text-2xl md:text-3xl font-bold uppercase text-gray-800 mb-3 tracking-wide">THIẾT KẾ NGOẠI THẤT VINFAST VF8</h2>
+                    <h3 className="text-lg md:text-xl font-bold text-[#cc0000] mb-4"> Thiết kế cá nhân hoá</h3>
                     <p className="text-gray-700 leading-relaxed text-[15px] mx-auto md:mx-0">
-                        VF 6 là tuyệt tác nghệ thuật được thiết kế dựa trên triết lý “Cặp đối lập tự nhiên”, tạo nên sự cân bằng hoàn hảo giữa các yếu tố tưởng chừng như
-                        đối lập: thú vị – tinh tế, công nghệ – con người.{" "}
+                        VF 8 thế hệ mới đem đến 10 lựa chọn màu ngoại thất phối hai màu độc quyền, phù hợp cho những chủ nhân yêu thích phong cách và sự sang trọng.
                     </p>
                 </div>
 
@@ -335,7 +377,7 @@ export default function VF6Details({ car }: { car: any }) {
                         <div key={index} className="flex flex-col items-center text-center group cursor-pointer">
                             <div className="w-full aspect-[4/3] relative overflow-hidden mb-5 border border-gray-100 shadow-sm rounded-sm">
                                 <Image
-                                    src={`/images/cars/VF6/details/${item.image}`}
+                                    src={`/images/cars/VF8/details/${item.image}`}
                                     alt={item.title}
                                     fill
                                     className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -352,11 +394,10 @@ export default function VF6Details({ car }: { car: any }) {
             {/* KHỐI 4: THIẾT KẾ NỘI THẤT */}
             <div className="mt-10 mb-8 max-w-5xl mx-auto w-full">
                 <div className="mb-10 text-center md:text-left">
-                    <h2 className="text-2xl md:text-3xl font-bold uppercase text-gray-800 mb-3 tracking-wide">THIẾT KẾ NỘI THẤT VINFAST VF6</h2>
-                    <h3 className="text-lg md:text-xl font-bold text-[#cc0000] mb-4">VF6 là cái tên nổi bật trong phân khúc về sự tiện nghi, cao cấp</h3>
+                    <h2 className="text-2xl md:text-3xl font-bold uppercase text-gray-800 mb-3 tracking-wide">THIẾT KẾ NỘI THẤT VINFAST VF8</h2>
+                    <h3 className="text-lg md:text-xl font-bold text-[#cc0000] mb-4">Thăng hạng đẳng cấp</h3>
                     <p className="text-gray-700 leading-relaxed text-[15px] mx-auto md:mx-0">
-                        Thiết kế nội thất lấy cảm hứng từ ngôi nhà thứ hai của gia đình với không gian rộng rãi, thoải mái cùng hai màu nội thất và chất liệu tự nhiên,
-                        thân thiện với người dùng.
+                        VF 8 Lux dành cho những người hiểu rõ giá trị sang trọng và đẳng cấp, mong muốn tận hưởng trọn vẹn những trải nghiệm cho bản thân và gia đình.
                     </p>
                 </div>
 
@@ -365,7 +406,7 @@ export default function VF6Details({ car }: { car: any }) {
                         <div key={index} className="flex flex-col items-center text-center group cursor-pointer">
                             <div className="w-full aspect-[4/3] relative overflow-hidden mb-5 border border-gray-100 shadow-sm rounded-sm">
                                 <Image
-                                    src={`/images/cars/VF6/details/${item.image}`}
+                                    src={`/images/cars/VF8/details/${item.image}`}
                                     alt={item.title}
                                     fill
                                     className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -382,11 +423,12 @@ export default function VF6Details({ car }: { car: any }) {
             {/* KHỐI 5: KHẢ NĂNG VẬN HÀNH */}
             <div className="mt-10 mb-8 max-w-5xl mx-auto w-full">
                 <div className="mb-10 text-center md:text-left">
-                    <h2 className="text-2xl md:text-3xl font-bold uppercase text-gray-800 mb-3 tracking-wide">KHẢ NĂNG VẬN HÀNH VINFAST VF6</h2>
-                    <h3 className="text-lg md:text-xl font-bold text-[#cc0000] mb-4">Lái xe VF6 nhưng trải nghiệm đã vượt xa phân khúc B</h3>
+                    <h2 className="text-2xl md:text-3xl font-bold uppercase text-gray-800 mb-3 tracking-wide">KHẢ NĂNG VẬN HÀNH VINFAST VF8</h2>
+                    <h3 className="text-lg md:text-xl font-bold text-[#cc0000] mb-4">Sẵn sàng cho mọi hành trình</h3>
                     <p className="text-gray-700 leading-relaxed text-[15px] mx-auto md:mx-0">
-                        Với sức mạnh của động cơ điện tương đương với những mẫu xe thuộc phân khúc C-SUV, VF 6 chắc chắn sẽ thỏa mãn niềm đam mê cầm lái của chủ sở hữu,
-                        tự tin chinh phục mọi địa hình.
+                        Với quãng đường di chuyển mỗi lần sạc đầy lên tới 471 km, kết hợp với hệ thống trạm sạc phủ sóng trên 63 tỉnh thành và nhiều ưu đãi đặc quyền dành
+                        riêng độc đáo, VinFast VF 8 cam kết sẵn sàng cùng bạn chinh phục mọi hành trình, cùng bạn tận hưởng không khí trong lành và khung cảnh thiên nhiên
+                        tươi đẹp trên mọi nẻo đường tại Việt Nam
                     </p>
                 </div>
 
@@ -395,7 +437,7 @@ export default function VF6Details({ car }: { car: any }) {
                         <div key={index} className="flex flex-col items-center text-center group cursor-pointer">
                             <div className="w-full aspect-[4/3] relative overflow-hidden mb-5 border border-gray-100 shadow-sm rounded-sm">
                                 <Image
-                                    src={`/images/cars/VF6/details/${item.image}`}
+                                    src={`/images/cars/VF8/details/${item.image}`}
                                     alt={item.title}
                                     fill
                                     className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -412,8 +454,8 @@ export default function VF6Details({ car }: { car: any }) {
             {/* KHỐI ẢNH NGANG SỐ 21 GIỮA VẬN HÀNH VÀ AN TOÀN */}
             <div className="w-full flex justify-center mb-8 max-w-6xl mx-auto px-4">
                 <Image
-                    src="/images/cars/VF6/details/26.webp"
-                    alt="Hình ảnh Vinfast VF6"
+                    src="/images/cars/VF8/details/27.webp"
+                    alt="Hình ảnh Vinfast VF7"
                     width={1200}
                     height={800}
                     className="w-full h-auto object-contain rounded-xl"
@@ -424,11 +466,11 @@ export default function VF6Details({ car }: { car: any }) {
             {/* KHỐI 6: TRANG BỊ AN TOÀN */}
             <div className="mt-10 mb-16 max-w-5xl mx-auto w-full px-4 md:px-0">
                 <div className="mb-10 text-center md:text-left">
-                    <h2 className="text-2xl md:text-3xl font-bold uppercase text-gray-800 mb-3 tracking-wide">TRANG BỊ AN TOÀN VINFAST VF6</h2>
-                    <h3 className="text-lg md:text-xl font-bold text-[#cc0000] mb-4">An tâm trên từng khoẳnh khắc</h3>
+                    <h2 className="text-2xl md:text-3xl font-bold uppercase text-gray-800 mb-3 tracking-wide">TRANG BỊ AN TOÀN VINFAST VF8</h2>
+                    <h3 className="text-lg md:text-xl font-bold text-[#cc0000] mb-4">An toàn của gia đình bạn là ưu tiên trên hết của VinFast</h3>
                     <p className="text-gray-700 leading-relaxed text-[15px] mx-auto md:mx-0">
-                        Với sứ mệnh sinh ra để những cung đường thách thức nhất với mọi điều kiện giao thông, VF6 đều cho thấy khả năng bảo vệ an toàn đến tận cùng cho
-                        mọi hành khách trên xe
+                        Tất cả các xe VinFast tuân thủ các tiêu chuẩn an toàn nghiêm ngặt nhất và được trang bị những công nghệ hiện đại theo chuẩn quốc tế, mang lại sự
+                        yên tâm tuyệt đối cho gia đình bạn trên mọi chặng đường
                     </p>
                 </div>
 
