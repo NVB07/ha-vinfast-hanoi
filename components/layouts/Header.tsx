@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { Menu, User, Phone, ChevronDown } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { createClient } from "@/utils/supabase/server";
@@ -34,9 +34,7 @@ export default async function Header() {
                                     </div>
                                     <Separator />
                                     <nav className="flex flex-col gap-6 font-bold text-base uppercase text-[#222] overflow-y-auto flex-1 min-h-0 pr-2 pb-4 pt-2">
-                                        <Link href="/" className="hover:text-[#0062BD] transition-colors">
-                                            TRANG CHỦ
-                                        </Link>
+                                        <SheetClose nativeButton={false} render={<Link href="/" className="hover:text-[#0062BD] transition-colors" />}>TRANG CHỦ</SheetClose>
 
                                         <details className="group">
                                             <summary className="flex items-center justify-between hover:text-[#0062BD] transition-colors cursor-pointer list-none [&::-webkit-details-marker]:hidden">
@@ -57,44 +55,39 @@ export default async function Header() {
                                                     "EC VAN",
                                                     "E BUS",
                                                 ].map((car) => (
-                                                    <Link
+                                                    <SheetClose
+                                                        nativeButton={false}
                                                         key={car}
-                                                        href={`/san-pham/${car.toLowerCase().replace(/\s+/g, "-")}`}
-                                                        className="hover:text-[#0062BD] transition-colors"
+                                                        render={
+                                                            <Link
+                                                                href={`/san-pham/${car.toLowerCase().replace(/\s+/g, "-")}`}
+                                                                className="hover:text-[#0062BD] transition-colors"
+                                                            />
+                                                        }
                                                     >
                                                         {car}
-                                                    </Link>
+                                                    </SheetClose>
                                                 ))}
                                             </div>
                                         </details>
 
-                                        <Link href="#" className="hover:text-[#0062BD] transition-colors">
-                                            BẢNG GIÁ XE
-                                        </Link>
+                                        <SheetClose nativeButton={false} render={<Link href="/bang-gia-xe" className="hover:text-[#0062BD] transition-colors" />}>BẢNG GIÁ XE</SheetClose>
 
                                         <details className="group">
                                             <summary className="flex items-center justify-between hover:text-[#0062BD] transition-colors cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                                                 MUA XE <ChevronDown className="w-4 h-4 opacity-70 group-open:rotate-180 transition-transform" />
                                             </summary>
                                             <div className="pl-4 pt-4 flex flex-col gap-4 font-semibold text-[13px] text-gray-600 normal-case border-l-2 border-l-gray-100 ml-2 mt-2">
-                                                <Link href="#" className="hover:text-[#0062BD] transition-colors">
-                                                    TRẢ GÓP
-                                                </Link>
-                                                <Link href="#" className="hover:text-[#0062BD] transition-colors">
+                                                <SheetClose nativeButton={false} render={<Link href="/tra-gop" className="hover:text-[#0062BD] transition-colors" />}>TRẢ GÓP</SheetClose>
+                                                <SheetClose nativeButton={false} render={<Link href="/tinh-gia-lan-banh" className="hover:text-[#0062BD] transition-colors" />}>
                                                     TÍNH GIÁ LĂN BÁNH
-                                                </Link>
+                                                </SheetClose>
                                             </div>
                                         </details>
 
-                                        <details className="group">
-                                            <summary className="flex items-center justify-between hover:text-[#0062BD] transition-colors cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                                                TIN TỨC <ChevronDown className="w-4 h-4 opacity-70 group-open:rotate-180 transition-transform" />
-                                            </summary>
-                                        </details>
+                                        <SheetClose nativeButton={false} render={<Link href="#" className="hover:text-[#0062BD] transition-colors" />}>TIN TỨC</SheetClose>
 
-                                        <Link href="#" className="hover:text-[#0062BD] transition-colors">
-                                            LIÊN HỆ
-                                        </Link>
+                                        <SheetClose nativeButton={false} render={<Link href="#" className="hover:text-[#0062BD] transition-colors" />}>LIÊN HỆ</SheetClose>
                                     </nav>
                                     <div className="mt-auto pt-6 border-t font-semibold">
                                         <a href={`tel:${phone}`} className="flex items-center gap-2 mb-4 hover:text-[#0062BD] transition-colors">
@@ -141,7 +134,7 @@ export default async function Header() {
                             </div>
                         </div>
 
-                        <Link href="#" className="hover:text-[#0062BD] transition-colors whitespace-nowrap h-full flex items-center">
+                        <Link href="/bang-gia-xe" className="hover:text-[#0062BD] transition-colors whitespace-nowrap h-full flex items-center">
                             BẢNG GIÁ XE
                         </Link>
 
@@ -152,13 +145,13 @@ export default async function Header() {
                             </div>
                             <div className="absolute top-[72px] left-1/2 -translate-x-1/2 w-[220px] bg-white border border-gray-100 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 flex flex-col py-2 rounded-sm border-t-2 border-t-[#0088FF] pointer-events-auto">
                                 <Link
-                                    href="#"
+                                    href="/tra-gop"
                                     className="px-5 py-3 hover:bg-gray-50 hover:pl-6 hover:text-[#0062BD] text-[13px] font-semibold text-gray-700 transition-all"
                                 >
                                     TRẢ GÓP
                                 </Link>
                                 <Link
-                                    href="#"
+                                    href="/tinh-gia-lan-banh"
                                     className="px-5 py-3 hover:bg-gray-50 hover:pl-6 hover:text-[#0062BD] text-[13px] font-semibold text-gray-700 transition-all"
                                 >
                                     TÍNH GIÁ LĂN BÁNH
@@ -167,22 +160,13 @@ export default async function Header() {
                         </div>
 
                         {/* Dropdown TIN TỨC (Optional future dropdown base) */}
-                        <div className="relative group h-full flex items-center">
-                            <div className="hover:text-[#0062BD] transition-colors flex items-center gap-1 cursor-pointer h-full whitespace-nowrap">
-                                TIN TỨC <ChevronDown className="w-3 h-3 opacity-60 group-hover:rotate-180 transition-transform" />
-                            </div>
-                        </div>
+                        <Link href="#" className="hover:text-[#0062BD] transition-colors whitespace-nowrap h-full flex items-center">
+                            TIN TỨC
+                        </Link>
 
                         <Link href="#" className="hover:text-[#0062BD] transition-colors whitespace-nowrap h-full flex items-center">
                             LIÊN HỆ
                         </Link>
-                    </div>
-
-                    {/* Mobile Right Icons */}
-                    <div className="flex items-center gap-2 md:hidden">
-                        <Button variant="ghost" size="icon" className="text-gray-600 focus:bg-transparent">
-                            <User className="h-5 w-5" />
-                        </Button>
                     </div>
                 </div>
             </div>
