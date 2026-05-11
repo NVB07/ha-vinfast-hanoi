@@ -12,6 +12,7 @@ import VF6Details from "./VF6Details";
 import VF7Details from "./VF7Details";
 import VF8Details from "./VF8Details";
 import VF9Details from "./VF9Details";
+import MINIOGREENDetails from "./minio-green";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
@@ -73,6 +74,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     // Đọc ảnh từ folder tương ứng (Bỏ khoảng trắng)
     let sliderImages: string[] = [];
     const carFolderName = car.name.replace(/\s+/g, "");
+    console.log("carFolderName", carFolderName);
     const dirPath = path.join(process.cwd(), "public", "images", "cars", carFolderName);
 
     try {
@@ -105,6 +107,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <VF7Details car={car} />
             <VF8Details car={car} />
             <VF9Details car={car} />
+            <MINIOGREENDetails car={car} />
         </div>
     );
 }

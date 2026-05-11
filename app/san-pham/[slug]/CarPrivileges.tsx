@@ -64,6 +64,26 @@ export default async function CarPrivileges({ car }: { car: any }) {
                     className="object-cover z-0 group-hover:scale-105 transition-transform duration-700"
                     sizes="(max-width: 1200px) 100vw, 1200px"
                 />
+                {car.name.toUpperCase() === "MINIO GREEN" ? (
+                    <div className="relative z-10 bg-white rounded-xl shadow-xl p-6 md:p-8 w-[90%] sm:w-[350px] md:w-[400px] flex flex-col items-center ml-[5%] md:ml-[10%] my-8">
+                        <h3 className="text-xl md:text-2xl font-black uppercase text-gray-800 mb-6 tracking-wide">CHÍNH SÁCH ĐẶT XE</h3>
+                        <div className="w-full flex justify-between border-b border-gray-100 pb-3 mb-3 text-sm md:text-base px-2">
+                            <span className="text-gray-500 font-medium">Mức cọc:</span>
+                            <span className="text-[#cc0000] font-bold">7 Triệu đồng (Không hoàn, huỷ, được phép chuyển nhượng)</span>
+                        </div>
+                        <div className="w-full flex justify-between border-b border-gray-100 pb-3 mb-4 text-sm md:text-base px-2">
+                            <span className="text-gray-500 font-medium">Cọc tiên phong giảm:</span>
+                            <span className="text-[#cc0000] font-bold">7 Triệu đồng</span>
+                        </div>
+                        {/* <p className="text-[11px] md:text-xs text-center text-gray-600 mb-6 md:mb-8 font-medium">Tính từ phút thứ 31 trở đi, sau khi sạc đầy</p> */}
+                        <a
+                            href={`tel:${phone}`}
+                            className="bg-[#cd6b48] hover:bg-[#b05b3d] text-white font-bold rounded-lg px-6 py-3.5 w-full shadow-md transition-all text-sm md:text-[15px] tracking-wider uppercase text-center block"
+                        >
+                            Tư vấn: {phone}
+                        </a>
+                    </div>
+                ) : null}
                 <div className="relative z-10 bg-white rounded-xl shadow-xl p-6 md:p-8 w-[90%] sm:w-[350px] md:w-[400px] flex flex-col items-center ml-[5%] md:ml-[10%] my-8">
                     <h3 className="text-xl md:text-2xl font-black uppercase text-gray-800 mb-6 tracking-wide">GIÁ SẠC PIN</h3>
                     <div className="w-full flex justify-between border-b border-gray-100 pb-3 mb-3 text-sm md:text-base px-2">
