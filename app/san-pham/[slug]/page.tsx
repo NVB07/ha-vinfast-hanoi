@@ -13,6 +13,7 @@ import VF7Details from "./VF7Details";
 import VF8Details from "./VF8Details";
 import VF9Details from "./VF9Details";
 import MINIOGREENDetails from "./minio-green";
+import HERIOGREENDetails from "./herio-green";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
@@ -108,6 +109,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <VF8Details car={car} />
             <VF9Details car={car} />
             <MINIOGREENDetails car={car} />
+            <HERIOGREENDetails car={car} />
         </div>
     );
 }
