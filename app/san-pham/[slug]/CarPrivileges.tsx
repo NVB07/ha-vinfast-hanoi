@@ -15,7 +15,7 @@ export default async function CarPrivileges({ car }: { car: any }) {
         <div className="container mx-auto px-4 max-w-6xl mt-24">
             <div className="flex items-center justify-center gap-4 mb-8">
                 <div className="h-px bg-gray-200 flex-1"></div>
-                <h2 className="text-xl md:text-2xl font-bold uppercase text-gray-800 text-center tracking-wide px-4 whitespace-nowrap">
+                <h2 className="text-xl md:text-2xl font-bold uppercase text-gray-800 text-center tracking-wide px-4">
                     NHỮNG ĐẶC QUYỀN SỞ HỮU VINFAST {car.name?.toUpperCase()}
                 </h2>
                 <div className="h-px bg-gray-200 flex-1"></div>
