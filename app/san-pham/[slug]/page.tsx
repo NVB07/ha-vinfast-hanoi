@@ -14,6 +14,11 @@ import VF8Details from "./VF8Details";
 import VF9Details from "./VF9Details";
 import MINIOGREENDetails from "./minio-green";
 import HERIOGREENDetails from "./herio-green";
+import NERIOGREENDetails from "./nerio-green";
+import LIMOGREENDetails from "./limo-green";
+
+import ECVANDetails from "./ec-van";
+import EBUSDetails from "./e-bus";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
@@ -99,7 +104,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </div>
 
             {/* Phần hiển thị chi tiết chung - Các đặc quyền */}
-            <CarPrivileges car={car} />
+            <CarPrivileges car={car.name !== "EC VAN" && car.name !== "E BUS" ? car : null} />
 
             {/* Phần hiển thị chi tiết riêng cho từng dòng xe (nếu có) */}
             <VF3Details car={car} />
@@ -110,6 +115,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <VF9Details car={car} />
             <MINIOGREENDetails car={car} />
             <HERIOGREENDetails car={car} />
+            <NERIOGREENDetails car={car} />
+            <LIMOGREENDetails car={car} />
+            <ECVANDetails car={car} />
+            <EBUSDetails car={car} />
         </div>
     );
 }

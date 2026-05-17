@@ -181,7 +181,7 @@ export default function VF8Details({ car }: { car: any }) {
                     {/* Overlay Bảng Gía */}
                     <div className="relative z-10 flex flex-col md:flex-row gap-6 w-[95%] max-w-5xl my-10">
                         {/* Cột ECO */}
-                        <div className="flex-1 bg-white/40 backdrop-blur-md rounded-[2.5rem] shadow-2xl p-6 md:p-8">
+                        <div className="flex-1 bg-white/60 backdrop-blur-md rounded-[2.5rem] shadow-2xl p-6 md:p-8">
                             <h3 className="text-xl md:text-2xl font-black uppercase text-gray-800 text-center mb-1 tracking-wide">VF8 ECO Bao gồm pin</h3>
                             <p className="text-center font-black text-gray-800 mb-6 md:mb-8 text-sm md:text-base pb-6">
                                 Giá: <span className="text-[#cc0000] text-xl md:text-2xl">{car.price || "689.000.000 VNĐ"}</span>
@@ -265,7 +265,7 @@ export default function VF8Details({ car }: { car: any }) {
                         </div>
 
                         {/* Cột PLUS */}
-                        <div className="flex-1 bg-white/40 backdrop-blur-md rounded-[2.5rem] shadow-2xl p-6 md:p-8">
+                        <div className="flex-1 bg-white/60 backdrop-blur-md rounded-[2.5rem] shadow-2xl p-6 md:p-8">
                             <h3 className="text-xl md:text-2xl font-black uppercase text-gray-800 text-center mb-1 tracking-wide">VF8 PLUS Bao gồm pin</h3>
                             <p className="text-center font-black text-gray-800 mb-6 md:mb-8 text-sm md:text-base pb-6">
                                 Giá: <span className="text-[#cc0000] text-xl md:text-2xl">{car.price_plus || "949.000.000 VNĐ"}</span>

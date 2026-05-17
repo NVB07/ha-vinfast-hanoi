@@ -89,7 +89,7 @@ export default function HERIOGREENDetails({ car }: { car: any }) {
                         sizes="(max-width: 1200px) 100vw, 1200px"
                     />
                     {/* Overlay Bảng Gía */}
-                    <div className="relative z-10 bg-white/40 backdrop-blur-md rounded-[2.5rem] shadow-2xl p-6 md:p-8 w-[95%] sm:w-[85%] md:w-[450px] my-10">
+                    <div className="relative z-10 bg-white/60 backdrop-blur-md rounded-[2.5rem] shadow-2xl p-6 md:p-8 w-[95%] sm:w-[85%] md:w-[450px] my-10">
                         <h3 className="text-2xl md:text-3xl font-black uppercase text-gray-800 text-center mb-1 tracking-wide">VINFAST HERIO GREEN</h3>
                         <p className="text-center font-black text-gray-800 mb-6 md:mb-8 text-sm md:text-base pb-6">
                             Giá xanh SM: <span className="text-[#cc0000] text-xl md:text-2xl">{car.price}</span>
@@ -138,7 +138,7 @@ export default function HERIOGREENDetails({ car }: { car: any }) {
                             </div>
                             <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                 <span className="text-black font-semibold w-[40%]">Điều hoà:</span>
-                                <span className="text-gray-800 font-bold w-[60%] text-right"> Giả da, Chỉnh cơ</span>
+                                <span className="text-gray-800 font-bold w-[60%] text-right">Chỉnh cơ</span>
                             </div>
                             <div className="flex justify-between border-b border-gray-300/40 pb-2">
                                 <span className="text-black font-semibold w-[40%]">Màn hình:</span>

@@ -81,7 +81,7 @@ export default function VF3Details({ car }: { car: any }) {
                         sizes="(max-width: 1200px) 100vw, 1200px"
                     />
                     {/* Overlay Bảng Gía */}
-                    <div className="relative z-10 bg-white/40 backdrop-blur-md rounded-[2.5rem] shadow-2xl p-6 md:p-8 w-[95%] sm:w-[85%] md:w-[450px] my-10">
+                    <div className="relative z-10 bg-white/60 backdrop-blur-md rounded-[2.5rem] shadow-2xl p-6 md:p-8 w-[95%] sm:w-[85%] md:w-[450px] my-10">
                         <h3 className="text-2xl md:text-3xl font-black uppercase text-gray-800 text-center mb-1 tracking-wide">VF3 BAO GỒM PIN</h3>
                         <p className="text-center font-black text-gray-800 mb-6 md:mb-8 text-sm md:text-base pb-6">
                             Giá: <span className="text-[#cc0000] text-xl md:text-2xl">{car.price}</span>
