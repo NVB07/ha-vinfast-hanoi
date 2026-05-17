@@ -5,13 +5,27 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export default function GlobalPromo() {
-    const [showPromoPopup, setShowPromoPopup] = useState(false);
+export default function GlobalPromo({ isShow = false, title = "Yêu cầu báo giá" }: { isShow?: boolean; title?: string }) {
+    const [showPromoPopup, setShowPromoPopup] = useState(isShow);
+
     const [promoName, setPromoName] = useState("");
     const [promoPhone, setPromoPhone] = useState("");
     const [promoCar, setPromoCar] = useState("");
     const [promoLoading, setPromoLoading] = useState(false);
+    const [modalTitle, setModalTitle] = useState(title);
 
+    const phone = "0345726001";
+    // Sync with isShow prop changes
+    useEffect(() => {
+        setShowPromoPopup(isShow);
+    }, [isShow]);
+
+    // Sync with title prop changes
+    useEffect(() => {
+        setModalTitle(title);
+    }, [title]);
+
+    // Auto-open trigger on first visit (any route)
     useEffect(() => {
         const hasSeen = localStorage.getItem("hasSeenPromoPopup");
         if (!hasSeen) {
@@ -20,6 +34,37 @@ export default function GlobalPromo() {
             }, 2500);
             return () => clearTimeout(timer);
         }
+    }, []);
+
+    // Listen to global open event from other components
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+
+        const handleOpen = (e: Event) => {
+            const customEvent = e as CustomEvent<{ title?: string; car?: string }>;
+            if (customEvent.detail?.title) {
+                setModalTitle(customEvent.detail.title);
+            }
+
+            const carOptions = ["VinFast VF 3", "VinFast VF 5 Plus", "VinFast VF e34", "VinFast VF 6", "VinFast VF 7", "VinFast VF 8", "VinFast VF 9"];
+
+            if (customEvent.detail?.car) {
+                const inputCar = customEvent.detail.car.toLowerCase().trim();
+                // Find matching option
+                const matched = carOptions.find(
+                    (opt) => opt.toLowerCase() === inputCar || opt.toLowerCase().includes(inputCar) || inputCar.includes(opt.toLowerCase().replace("vinfast ", "")),
+                );
+                if (matched) {
+                    setPromoCar(matched);
+                } else {
+                    setPromoCar(customEvent.detail.car);
+                }
+            }
+            setShowPromoPopup(true);
+        };
+
+        window.addEventListener("open-global-promo", handleOpen);
+        return () => window.removeEventListener("open-global-promo", handleOpen);
     }, []);
 
     const handleClosePromoPopup = () => {
@@ -44,6 +89,7 @@ export default function GlobalPromo() {
                     name: promoName,
                     phone: promoPhone,
                     car: promoCar,
+                    title: modalTitle,
                 }),
             });
 
@@ -64,15 +110,7 @@ export default function GlobalPromo() {
         }
     };
 
-    const carOptions = [
-        "VinFast VF 3",
-        "VinFast VF 5 Plus",
-        "VinFast VF e34",
-        "VinFast VF 6",
-        "VinFast VF 7",
-        "VinFast VF 8",
-        "VinFast VF 9"
-    ];
+    const carOptions = ["VinFast VF 3", "VinFast VF 5 Plus", "VinFast VF e34", "VinFast VF 6", "VinFast VF 7", "VinFast VF 8", "VinFast VF 9"];
 
     return (
         <>
@@ -96,10 +134,8 @@ export default function GlobalPromo() {
                             </button>
                         </div>
 
-                        <form onSubmit={handlePromoSubmit} className="p-6 md:p-8 flex flex-col gap-4">
-                            <h3 className="text-sm md:text-base font-extrabold text-gray-800 text-center tracking-tight leading-snug uppercase mb-2">
-                                NHẬN BÁO GIÁ ƯU ĐÃI - MIỄN PHÍ 100% THUẾ TRƯỚC
-                            </h3>
+                        <form onSubmit={handlePromoSubmit} className="px-6 pt-4 flex flex-col gap-4">
+                            <h3 className="text-sm md:text-lg font-extrabold text-red-500 text-center tracking-tight leading-snug uppercase mb-2">{modalTitle}</h3>
 
                             <Input
                                 required
@@ -149,6 +185,24 @@ export default function GlobalPromo() {
                                 {promoLoading ? "Đang gửi..." : "NHẬN BÁO GIÁ"}
                             </Button>
                         </form>
+                        <div className=" flex flex-col mt-2 items-center justify-center gap-2 mb-4">
+                            <p className="text-center text-xs md:text-sm text-gray-400">Hoặc</p>
+                            <div className="flex gap-2">
+                                <a href={`https://zalo.me/${phone}`} target="_blank" className=" relative flex items-center cursor-pointer group">
+                                    <div className="w-10 h-10 bg-[#0088FF] rounded-full flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform z-10 border-2 borderWhite">
+                                        <span className="text-white text-[9px] font-black uppercase trackingWider">ZALO</span>
+                                    </div>
+                                </a>
+
+                                <a href={`tel:${phone}`} className="flex items-center cursor-pointer hover:scale-105 transition-transform origin-left">
+                                    <div className="w-10 h-10 bg-[#0088FF] rounded-full flex items-center justify-center shadow-lg z-10 border-2 border-white">
+                                        <svg className="w-4 h-4 text-white animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.28-.28.67-.36 1.02-.25 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
+                                        </svg>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

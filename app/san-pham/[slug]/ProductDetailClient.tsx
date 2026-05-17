@@ -90,11 +90,20 @@ export default function ProductDetailClient({ car, sliderImages }: { car: any; s
 
                 {/* CTA Buttons */}
                 <div className="flex items-center gap-4 mt-2 justify-center lg:justify-start">
-                    <Button className="bg-[#cc0000] hover:bg-[#aa0000] text-white font-bold rounded px-8 h-12 shadow transition-all uppercase tracking-wide text-sm">
-                        MUA NGAY
-                    </Button>
-                    <Button className="bg-[#0088FF] hover:bg-[#0066CC] text-white font-bold rounded px-8 h-12 shadow transition-all uppercase tracking-wide text-sm">
-                        ĐĂNG KÝ LÁI THỬ
+                    <Button
+                        onClick={() => {
+                            window.dispatchEvent(
+                                new CustomEvent("open-global-promo", {
+                                    detail: {
+                                        title: `Nhận tư vấn ${car.name}`,
+                                        car: car.name,
+                                    },
+                                }),
+                            );
+                        }}
+                        className="bg-[#cc0000] hover:bg-[#aa0000] text-white font-bold rounded px-8 h-12 shadow transition-all uppercase tracking-wide text-sm"
+                    >
+                        Nhận tư vấn
                     </Button>
                 </div>
             </div>

@@ -4,7 +4,7 @@ import dns from "dns";
 
 export async function POST(req: Request) {
     try {
-        const { name, phone, car } = await req.json();
+        const { name, phone, car, title = "Yêu cầu báo giá" } = await req.json();
 
         if (!name || !phone || !car) {
             return NextResponse.json({ error: "Thiếu trường thông tin bắt buộc!" }, { status: 400 });
@@ -33,12 +33,12 @@ export async function POST(req: Request) {
         const mailOptions = {
             from: `"Website VinFast Hà Nội" <${process.env.EMAIL_USER}>`,
             to: process.env.EMAIL_TO || process.env.EMAIL_USER,
-            subject: `🔥 Yêu cầu báo giá mới từ Khách hàng: ${name}`,
+            subject: `🔥 ${title} từ Khách hàng: ${name}`,
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); background-color: #ffffff;">
                     <!-- Top header color gradient banner -->
                     <div style="background: linear-gradient(135deg, #0088FF, #0044BB); padding: 25px 20px; text-align: center; color: white;">
-                        <h2 style="margin: 0; font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px;">YÊU CẦU NHẬN BÁO GIÁ</h2>
+                        <h2 style="margin: 0; font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px;">${title}</h2>
                         <p style="margin: 5px 0 0 0; font-size: 13px; opacity: 0.9; letter-spacing: 0.5px;">Hệ thống thu thập Leads Khách hàng VinFast</p>
                     </div>
                     

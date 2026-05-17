@@ -1,4 +1,4 @@
-import React from "react";
+"use client";
 import Image from "next/image";
 
 const exteriorFeatures = [
@@ -219,7 +219,19 @@ export default function VF6Details({ car }: { car: any }) {
                                 </div>
                             </div>
                             <div className="mt-6 md:mt-8 flex justify-center px-4">
-                                <button className="bg-[#0088FF] hover:bg-[#0066CC] text-white font-bold rounded-lg px-6 py-3 shadow-md transition-all tracking-wide text-xs md:text-sm flex items-center justify-center gap-2 w-full">
+                                <button
+                                    onClick={() => {
+                                        window.dispatchEvent(
+                                            new CustomEvent("open-global-promo", {
+                                                detail: {
+                                                    title: `Nhận tư vấn ${car.name}`,
+                                                    car: car.name,
+                                                },
+                                            }),
+                                        );
+                                    }}
+                                    className="bg-[#0088FF] hover:bg-[#0066CC] text-white font-bold rounded-lg px-6 py-3 shadow-md transition-all tracking-wide text-xs md:text-sm flex items-center justify-center gap-2 w-full"
+                                >
                                     LIÊN HỆ NHẬN ƯU ĐÃI NGAY 🎁
                                 </button>
                             </div>
@@ -299,7 +311,19 @@ export default function VF6Details({ car }: { car: any }) {
                                 </div>
                             </div>
                             <div className="mt-6 md:mt-8 flex justify-center px-4">
-                                <button className="bg-[#0088FF] hover:bg-[#0066CC] text-white font-bold rounded-lg px-6 py-3 shadow-md transition-all tracking-wide text-xs md:text-sm flex items-center justify-center gap-2 w-full">
+                                <button
+                                    onClick={() => {
+                                        window.dispatchEvent(
+                                            new CustomEvent("open-global-promo", {
+                                                detail: {
+                                                    title: `Nhận tư vấn ${car.name}`,
+                                                    car: car.name,
+                                                },
+                                            }),
+                                        );
+                                    }}
+                                    className="bg-[#0088FF] hover:bg-[#0066CC] text-white font-bold rounded-lg px-6 py-3 shadow-md transition-all tracking-wide text-xs md:text-sm flex items-center justify-center gap-2 w-full"
+                                >
                                     LIÊN HỆ NHẬN ƯU ĐÃI NGAY 🎁
                                 </button>
                             </div>

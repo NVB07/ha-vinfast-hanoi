@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import Image from "next/image";
 
@@ -155,7 +156,19 @@ export default function MINIOGREENDetails({ car }: { car: any }) {
                             </div>
                         </div>
                         <div className="mt-8 md:mt-10 flex justify-center px-4">
-                            <button className="bg-[#0088FF] hover:bg-[#0066CC] text-white font-bold rounded-lg px-6 md:px-8 py-3.5 md:py-4 shadow-md transition-all tracking-wide text-xs md:text-sm flex items-center justify-center gap-2 w-full">
+                            <button
+                                onClick={() => {
+                                    window.dispatchEvent(
+                                        new CustomEvent("open-global-promo", {
+                                            detail: {
+                                                title: `Nhận tư vấn ${car.name}`,
+                                                car: car.name,
+                                            },
+                                        }),
+                                    );
+                                }}
+                                className="bg-[#0088FF] hover:bg-[#0066CC] text-white font-bold rounded-lg px-6 md:px-8 py-3.5 md:py-4 shadow-md transition-all tracking-wide text-xs md:text-sm flex items-center justify-center gap-2 w-full"
+                            >
                                 LIÊN HỆ NHẬN ƯU ĐÃI NGAY 🎁
                             </button>
                         </div>

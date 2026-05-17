@@ -74,6 +74,26 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
         return dbCar ? dbCar : mockCar;
     });
     const router = useRouter();
+    const [showContactDialog, setShowContactDialog] = useState(false);
+    const [contactInfo, setContactInfo] = useState({ phone: "0345726001", zalo: "0345726001" });
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const supabase = createClient();
+                const { data } = await supabase.from("general_settings").select("*").single();
+                if (data) {
+                    setContactInfo({
+                        phone: data.phone || data.zalo || "0345726001",
+                        zalo: data.zalo || "0345726001",
+                    });
+                }
+            } catch (err) {
+                console.error("Failed to load contact settings:", err);
+            }
+        };
+        fetchSettings();
+    }, []);
 
     // Footer Lead Form states
     const [leadName, setLeadName] = useState("");
@@ -87,20 +107,6 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
             return alert("Vui lòng điền đầy đủ thông tin!");
         }
         setLeadLoading(true);
-        try {
-            // 1. Database backup insert
-            const supabase = createClient();
-            await supabase.from("leads").insert([
-                {
-                    name: leadName,
-                    phone: leadPhone,
-                    car: leadCar,
-                    created_at: new Date().toISOString(),
-                },
-            ]);
-        } catch (err) {
-            console.log("Bottom lead insert simulated:", err);
-        }
 
         try {
             // 2. Call backend Nodemailer mailer endpoint
@@ -273,11 +279,22 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                                                 <div className="text-xs md:text-sm font-bold text-gray-800">{model.price}</div>
                                             </div>
                                         </div>
-
                                         {/* CTAs */}
                                         <div className="flex gap-4 mt-12">
-                                            <Button className="bg-[#0088FF] hover:bg-[#0066CC] text-white font-bold rounded-full px-8 h-10 text-xs shadow transition-all">
-                                                Đăng ký lái thử
+                                            <Button
+                                                onClick={() => {
+                                                    window.dispatchEvent(
+                                                        new CustomEvent("open-global-promo", {
+                                                            detail: {
+                                                                title: `Nhận tư vấn ${model.name}`,
+                                                                car: model.name,
+                                                            },
+                                                        }),
+                                                    );
+                                                }}
+                                                className="bg-[#0088FF] hover:bg-[#0066CC] text-white font-bold rounded-full px-8 h-10 text-xs shadow transition-all"
+                                            >
+                                                Nhận tư vấn
                                             </Button>
                                             <Button
                                                 onClick={() => router.push(`/san-pham/${model.name.toLowerCase().replace(/ /g, "-")}`)}
@@ -380,14 +397,11 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                             Khách hàng.
                         </p>
                         <div className="flex flex-row gap-3">
-                            <Button className="bg-[#0088FF] hover:bg-[#0066CC] text-white font-bold rounded px-5 md:px-7 h-10 text-[10px] md:text-[11px] uppercase shadow transition-all tracking-wider md:w-auto w-[160px]">
-                                Đặt lịch bảo dưỡng
-                            </Button>
                             <Button
-                                variant="outline"
-                                className="border-none bg-white text-gray-700 font-bold rounded px-5 md:px-7 h-10 text-[10px] md:text-[11px] uppercase hover:bg-gray-50 shadow-sm transition-all tracking-wider md:w-auto w-[120px]"
+                                onClick={() => setShowContactDialog(true)}
+                                className="bg-[#0088FF] hover:bg-[#0066CC] text-white font-bold rounded px-5 md:px-7 h-10 text-[10px] md:text-[11px] uppercase shadow transition-all tracking-wider md:w-auto w-[160px]"
                             >
-                                Chính sách
+                                Chi tiết
                             </Button>
                         </div>
                     </div>
@@ -422,7 +436,10 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                             mà còn kêu gọi cộng đồng cùng chung tay chuyển đổi xanh, góp phần xây dựng một Việt Nam phát triển vững bền, nơi giao thông không chỉ hiện đại
                             mà còn thân thiện với môi trường.
                         </p>
-                        <Button className="bg-[#0088FF] hover:bg-[#0066CC] text-white font-bold rounded px-6 py-2.5 h-10 text-[10px] md:text-[11px] uppercase shadow transition-all tracking-wider inline-flex w-auto outline-none border-none">
+                        <Button
+                            onClick={() => router.push("/tin-tuc")}
+                            className="bg-[#0088FF] hover:bg-[#0066CC] text-white font-bold rounded px-6 py-2.5 h-10 text-[10px] md:text-[11px] uppercase shadow transition-all tracking-wider inline-flex w-auto outline-none border-none"
+                        >
                             XEM CHI TIẾT
                         </Button>
                     </div>
@@ -588,6 +605,67 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                     </p>
                 </div>
             </section>
+
+            {/* Contact Dialog for Warranty & Service Details */}
+            {showContactDialog && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-[4px] z-[9999] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 cursor-default" onClick={() => setShowContactDialog(false)}></div>
+
+                    <div className="relative bg-white w-full max-w-[400px] rounded-2xl p-6 md:p-8 overflow-hidden shadow-2xl z-10 animate-in fade-in zoom-in-95 duration-200 flex flex-col items-center">
+                        <button
+                            type="button"
+                            onClick={() => setShowContactDialog(false)}
+                            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer border-none outline-none z-20"
+                            aria-label="Close contact dialog"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+
+                        <div className="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center text-[#0088FF] mb-4">
+                            <svg className="w-6 h-6 animate-pulse" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 0 1-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8Z"
+                                />
+                            </svg>
+                        </div>
+
+                        <h3 className="text-base md:text-lg font-extrabold text-gray-900 text-center tracking-tight mb-2 uppercase">Liên hệ để biết thêm chi tiết</h3>
+                        <p className="text-xs md:text-sm text-gray-500 text-center mb-6 leading-relaxed">
+                            Vui lòng chọn hình thức liên hệ thuận tiện nhất cho Quý khách dưới đây.
+                        </p>
+
+                        <div className="flex flex-col gap-3.5 w-full">
+                            <a
+                                href={`https://zalo.me/${contactInfo.zalo}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-3 w-full bg-[#0088FF] hover:bg-[#0077EE] text-white font-bold py-3 px-5 rounded-xl transition-all shadow-md hover:-translate-y-0.5 justify-center text-xs md:text-sm uppercase tracking-wider"
+                            >
+                                {/* <span className="text-[10px] font-black bg-white text-[#0088FF] px-1.5 py-0.5 rounded-md">ZALO</span> */}
+                                Chat qua Zalo
+                            </a>
+
+                            <a
+                                href={`tel:${contactInfo.phone}`}
+                                className="flex items-center gap-3 w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-5 rounded-xl transition-all shadow-md hover:-translate-y-0.5 justify-center text-xs md:text-sm uppercase tracking-wider"
+                            >
+                                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.302a12.017 12.017 0 0 1-5.905-5.905c-.242-.44-.076-.927.302-1.21l1.293-.97a2.25 2.25 0 0 0 .417-1.173L9.763 5.17c-.125-.501-.575-.852-1.091-.852H6.75A2.25 2.25 0 0 0 2.25 4.5v2.25Z"
+                                    />
+                                </svg>
+                                Hotline: {contactInfo.phone}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            )}
         </main>
     );
 }
