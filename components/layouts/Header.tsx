@@ -34,7 +34,9 @@ export default async function Header() {
                                     </div>
                                     <Separator />
                                     <nav className="flex flex-col gap-6 font-bold text-base uppercase text-[#222] overflow-y-auto flex-1 min-h-0 pr-2 pb-4 pt-2">
-                                        <SheetClose nativeButton={false} render={<Link href="/" className="hover:text-[#0062BD] transition-colors" />}>TRANG CHỦ</SheetClose>
+                                        <SheetClose nativeButton={false} render={<Link href="/" className="hover:text-[#0062BD] transition-colors" />}>
+                                            TRANG CHỦ
+                                        </SheetClose>
 
                                         <details className="group">
                                             <summary className="flex items-center justify-between hover:text-[#0062BD] transition-colors cursor-pointer list-none [&::-webkit-details-marker]:hidden">
@@ -71,23 +73,34 @@ export default async function Header() {
                                             </div>
                                         </details>
 
-                                        <SheetClose nativeButton={false} render={<Link href="/bang-gia-xe" className="hover:text-[#0062BD] transition-colors" />}>BẢNG GIÁ XE</SheetClose>
+                                        <SheetClose nativeButton={false} render={<Link href="/bang-gia-xe" className="hover:text-[#0062BD] transition-colors" />}>
+                                            BẢNG GIÁ XE
+                                        </SheetClose>
 
                                         <details className="group">
                                             <summary className="flex items-center justify-between hover:text-[#0062BD] transition-colors cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                                                 MUA XE <ChevronDown className="w-4 h-4 opacity-70 group-open:rotate-180 transition-transform" />
                                             </summary>
                                             <div className="pl-4 pt-4 flex flex-col gap-4 font-semibold text-[13px] text-gray-600 normal-case border-l-2 border-l-gray-100 ml-2 mt-2">
-                                                <SheetClose nativeButton={false} render={<Link href="/tra-gop" className="hover:text-[#0062BD] transition-colors" />}>TRẢ GÓP</SheetClose>
-                                                <SheetClose nativeButton={false} render={<Link href="/tinh-gia-lan-banh" className="hover:text-[#0062BD] transition-colors" />}>
+                                                <SheetClose nativeButton={false} render={<Link href="/tra-gop" className="hover:text-[#0062BD] transition-colors" />}>
+                                                    TRẢ GÓP
+                                                </SheetClose>
+                                                <SheetClose
+                                                    nativeButton={false}
+                                                    render={<Link href="/tinh-gia-lan-banh" className="hover:text-[#0062BD] transition-colors" />}
+                                                >
                                                     TÍNH GIÁ LĂN BÁNH
                                                 </SheetClose>
                                             </div>
                                         </details>
 
-                                        <SheetClose nativeButton={false} render={<Link href="#" className="hover:text-[#0062BD] transition-colors" />}>TIN TỨC</SheetClose>
+                                        <SheetClose nativeButton={false} render={<Link href="/tin-tuc" className="hover:text-[#0062BD] transition-colors" />}>
+                                            TIN TỨC
+                                        </SheetClose>
 
-                                        <SheetClose nativeButton={false} render={<Link href="#" className="hover:text-[#0062BD] transition-colors" />}>LIÊN HỆ</SheetClose>
+                                        <SheetClose nativeButton={false} render={<Link href="/lien-he" className="hover:text-[#0062BD] transition-colors" />}>
+                                            LIÊN HỆ
+                                        </SheetClose>
                                     </nav>
                                     <div className="mt-auto pt-6 border-t font-semibold">
                                         <a href={`tel:${phone}`} className="flex items-center gap-2 mb-4 hover:text-[#0062BD] transition-colors">
@@ -160,11 +173,11 @@ export default async function Header() {
                         </div>
 
                         {/* Dropdown TIN TỨC (Optional future dropdown base) */}
-                        <Link href="#" className="hover:text-[#0062BD] transition-colors whitespace-nowrap h-full flex items-center">
+                        <Link href="/tin-tuc" className="hover:text-[#0062BD] transition-colors whitespace-nowrap h-full flex items-center">
                             TIN TỨC
                         </Link>
 
-                        <Link href="#" className="hover:text-[#0062BD] transition-colors whitespace-nowrap h-full flex items-center">
+                        <Link href="/lien-he" className="hover:text-[#0062BD] transition-colors whitespace-nowrap h-full flex items-center">
                             LIÊN HỆ
                         </Link>
                     </div>

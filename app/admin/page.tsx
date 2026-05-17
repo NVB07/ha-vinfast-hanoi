@@ -10,25 +10,26 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockHomeCars, mockSliders } from "@/utils/mockData";
+import { stripHtml } from "@/utils/slug";
 
 const supabase = createClient();
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false, loading: () => <p className="text-[10px] text-gray-400">Đang tải editor...</p> });
 
+const quillModules = {
+    toolbar: [
+        [{ header: [1, 2, 3, 4, 5, 6, false] }],
+        ["bold", "italic", "underline", "strike"],
+        [{ color: [] }, { background: [] }],
+        [{ list: "ordered" }, { list: "bullet" }],
+        ["clean"],
+    ],
+};
+
 export function EditCarForm({ mockCar, dbCar, onUpdated }: { mockCar: any; dbCar: any; onUpdated: () => void }) {
     const displayCar = dbCar || mockCar;
     const [descript, setDescript] = useState(displayCar?.descript || "");
     const [loading, setLoading] = useState(false);
-
-    const quillModules = {
-        toolbar: [
-            [{ header: [1, 2, 3, 4, 5, 6, false] }],
-            ["bold", "italic", "underline", "strike"],
-            [{ color: [] }, { background: [] }],
-            [{ list: "ordered" }, { list: "bullet" }],
-            ["clean"],
-        ],
-    };
 
     const handleCarUpdate = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -219,22 +220,60 @@ export default function AdminPage() {
     // NEWS HANDLERS
     const [newsForm, setNewsForm] = useState({ title: "", description: "", category: "Tin tức" });
     const [newsFile, setNewsFile] = useState<File | null>(null);
+    const [editingNews, setEditingNews] = useState<any | null>(null);
+
     const handleNewsSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!newsFile) return alert("Vui lòng chọn ảnh!");
         if (!newsForm.title) return alert("Điền tiêu đề tin tức!");
+        if (!editingNews && !newsFile) return alert("Vui lòng chọn ảnh!");
         setLoading(true);
         try {
-            const imageUrl = await uploadToCloudinary(newsFile);
-            await supabase.from("news").insert([{ ...newsForm, image: imageUrl }]);
-            alert("Thêm Tin Tức thành công!");
+            let imageUrl = editingNews?.image || "";
+            if (newsFile) {
+                imageUrl = await uploadToCloudinary(newsFile);
+            }
+
+            if (editingNews) {
+                // Sửa bài viết cũ
+                const { error } = await supabase
+                    .from("news")
+                    .update({ ...newsForm, image: imageUrl })
+                    .eq("id", editingNews.id);
+                if (error) throw error;
+                alert("Cập nhật Tin Tức thành công!");
+                setEditingNews(null);
+            } else {
+                // Thêm bài viết mới
+                const { error } = await supabase
+                    .from("news")
+                    .insert([{ ...newsForm, image: imageUrl }]);
+                if (error) throw error;
+                alert("Thêm Tin Tức thành công!");
+            }
+
             setNewsForm({ title: "", description: "", category: "Tin tức" });
             setNewsFile(null);
+            const fileInput = document.getElementById("news-upload-input") as HTMLInputElement;
+            if (fileInput) fileInput.value = "";
             fetchData();
         } catch (error: any) {
             alert("Lỗi: " + error.message);
         }
         setLoading(false);
+    };
+
+    const handleEditNewsClick = (n: any) => {
+        setEditingNews(n);
+        setNewsForm({
+            title: n.title,
+            description: n.description,
+            category: n.category || "Tin tức",
+        });
+        setNewsFile(null);
+        const formElement = document.getElementById("news-form-title");
+        if (formElement) {
+            formElement.scrollIntoView({ behavior: "smooth" });
+        }
     };
 
     const handleDelete = async (table: string, id: number) => {
@@ -316,54 +355,89 @@ export default function AdminPage() {
                 {/* TAB NEWS */}
                 <TabsContent value="news">
                     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-8">
-                        <h2 className="text-xl font-bold mb-4">Thêm Tin Tức Mới</h2>
+                        <h2 id="news-form-title" className="text-xl font-bold mb-4 text-[#0062BD]">
+                            {editingNews ? `Sửa Tin Tức: "${editingNews.title}"` : "Thêm Tin Tức Mới"}
+                        </h2>
                         <form onSubmit={handleNewsSubmit} className="grid grid-cols-1 gap-4">
                             <div>
                                 <label className="block text-sm font-medium mb-1">Tiêu đề bài viết</label>
-                                <Input value={newsForm.title} onChange={(e) => setNewsForm({ ...newsForm, title: e.target.value })} placeholder="Tiêu đề..." />
+                                <Input value={newsForm.title} onChange={(e) => setNewsForm(prev => ({ ...prev, title: e.target.value }))} placeholder="Tiêu đề..." />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium mb-1">Mô tả ngắn</label>
-                                <textarea
-                                    className="w-full flex min-h-[80px] rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                                    value={newsForm.description}
-                                    onChange={(e) => setNewsForm({ ...newsForm, description: e.target.value })}
-                                    placeholder="Nội dung mô tả..."
-                                />
+                                <label className="block text-sm font-medium mb-1">Mô tả bài viết (Hỗ trợ Định dạng)</label>
+                                <div className="bg-white [&_.ql-editor]:min-h-[150px] [&_.ql-editor]:text-sm">
+                                    <ReactQuill
+                                        theme="snow"
+                                        value={newsForm.description}
+                                        onChange={(val) => setNewsForm(prev => ({ ...prev, description: val }))}
+                                        modules={quillModules}
+                                        placeholder="Nội dung mô tả bài viết..."
+                                    />
+                                </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium mb-1">Thể loại</label>
-                                    <Input value={newsForm.category} onChange={(e) => setNewsForm({ ...newsForm, category: e.target.value })} placeholder="vd: Tin tức" />
+                                    <Input value={newsForm.category} onChange={(e) => setNewsForm(prev => ({ ...prev, category: e.target.value }))} placeholder="vd: Tin tức" />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium mb-1">Ảnh bìa hình chữ nhật ngang</label>
-                                    <Input type="file" accept="image/*" onChange={(e) => setNewsFile(e.target.files?.[0] || null)} className="cursor-pointer" />
+                                    <label className="block text-sm font-medium mb-1">
+                                        Ảnh bìa hình chữ nhật ngang {editingNews && "(Bỏ trống để giữ ảnh cũ)"}
+                                    </label>
+                                    <Input id="news-upload-input" type="file" accept="image/*" onChange={(e) => setNewsFile(e.target.files?.[0] || null)} className="cursor-pointer" />
                                 </div>
                             </div>
-                            <div className="pt-2">
+                            <div className="pt-2 flex gap-3">
                                 <Button type="submit" disabled={loading} className="bg-[#0088FF] hover:bg-[#0066CC]">
-                                    {loading ? "Đang tải..." : "Lưu Tin Tức"}
+                                    {loading ? "Đang tải..." : editingNews ? "Cập Nhật Tin Tức" : "Lưu Tin Tức"}
                                 </Button>
+                                {editingNews && (
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => {
+                                            setEditingNews(null);
+                                            setNewsForm({ title: "", description: "", category: "Tin tức" });
+                                            setNewsFile(null);
+                                            const fileInput = document.getElementById("news-upload-input") as HTMLInputElement;
+                                            if (fileInput) fileInput.value = "";
+                                        }}
+                                    >
+                                        Hủy Sửa
+                                    </Button>
+                                )}
                             </div>
                         </form>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {news.map((n) => (
-                            <div key={n.id} className="border rounded-lg bg-white overflow-hidden group shadow-sm flex flex-col">
-                                <div className="relative aspect-[16/9] w-full">
+                            <div key={n.id} className="border rounded-lg bg-white overflow-hidden shadow-sm flex flex-col">
+                                <div className="relative aspect-[16/9] w-full bg-gray-100">
                                     <Image src={n.image} alt={n.title} fill className="object-cover" />
                                     <div className="absolute top-2 left-2 bg-[#0062BD] text-white text-[10px] font-bold px-2 py-1 rounded-sm">{n.category}</div>
-                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <Button variant="destructive" size="sm" className="h-7 w-7 p-0" onClick={() => handleDelete("news", n.id)}>
-                                            X
-                                        </Button>
-                                    </div>
                                 </div>
                                 <div className="p-4 flex-1 flex flex-col">
                                     <h4 className="font-semibold text-sm line-clamp-2 mb-2">{n.title}</h4>
-                                    <p className="text-xs text-gray-500 line-clamp-2 mt-auto">{n.description}</p>
+                                    <p className="text-xs text-gray-500 line-clamp-2 mb-4 leading-relaxed">{stripHtml(n.description)}</p>
+                                    <div className="mt-auto pt-3 border-t border-gray-100 flex justify-between gap-2">
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="flex-1 text-xs h-7 text-[#0062BD] border-[#0062BD]/30 hover:bg-blue-50"
+                                            onClick={() => handleEditNewsClick(n)}
+                                        >
+                                            Sửa
+                                        </Button>
+                                        <Button
+                                            variant="destructive"
+                                            size="sm"
+                                            className="flex-1 text-xs h-7"
+                                            onClick={() => handleDelete("news", n.id)}
+                                        >
+                                            Xóa
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                         ))}

@@ -1,10 +1,13 @@
 "use client";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
+import { toSlug, stripHtml } from "@/utils/slug";
+import { createClient } from "@/utils/supabase/client";
 
 import { Carousel, CarouselContent, CarouselItem, useCarousel } from "@/components/ui/carousel";
 
@@ -26,7 +29,17 @@ function SliderArrows() {
                 aria-label="Previous slide"
                 className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 md:w-12 md:h-12 rounded-full bg-black/20 hover:bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center cursor-pointer border-none outline-none"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                >
                     <path d="M15 18l-6-6 6-6" />
                 </svg>
             </button>
@@ -36,7 +49,17 @@ function SliderArrows() {
                 aria-label="Next slide"
                 className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 md:w-12 md:h-12 rounded-full bg-black/20 hover:bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center cursor-pointer border-none outline-none"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                >
                     <path d="M9 18l6-6-6-6" />
                 </svg>
             </button>
@@ -51,6 +74,61 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
         return dbCar ? dbCar : mockCar;
     });
     const router = useRouter();
+
+    // Footer Lead Form states
+    const [leadName, setLeadName] = useState("");
+    const [leadPhone, setLeadPhone] = useState("");
+    const [leadCar, setLeadCar] = useState("");
+    const [leadLoading, setLeadLoading] = useState(false);
+
+    const handleBottomLeadSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!leadName || !leadPhone || !leadCar) {
+            return alert("Vui lòng điền đầy đủ thông tin!");
+        }
+        setLeadLoading(true);
+        try {
+            // 1. Database backup insert
+            const supabase = createClient();
+            await supabase.from("leads").insert([
+                {
+                    name: leadName,
+                    phone: leadPhone,
+                    car: leadCar,
+                    created_at: new Date().toISOString(),
+                },
+            ]);
+        } catch (err) {
+            console.log("Bottom lead insert simulated:", err);
+        }
+
+        try {
+            // 2. Call backend Nodemailer mailer endpoint
+            const response = await fetch("/api/send-lead", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    name: leadName,
+                    phone: leadPhone,
+                    car: leadCar,
+                }),
+            });
+            const result = await response.json();
+            if (!response.ok) {
+                console.error("Nodemailer error:", result.error);
+            }
+        } catch (err) {
+            console.error("Mail API failed:", err);
+        }
+
+        setLeadLoading(false);
+        alert("Cảm ơn Quý khách! Yêu cầu nhận báo giá đã được gửi thành công. Chúng tôi sẽ liên hệ trong vòng 15 phút.");
+        setLeadName("");
+        setLeadPhone("");
+        setLeadCar("");
+    };
     const displayNews =
         news.length > 0
             ? news
@@ -72,7 +150,15 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                             <CarouselItem key={index} className="relative h-[300px] sm:h-[450px] md:h-[650px] lg:h-[750px] w-full">
                                 <a href="#name_registration" className="block w-full h-full relative overflow-hidden">
                                     {/* background blur */}
-                                    <Image src={item} alt="" fill className="object-cover blur-xl scale-110" priority={index === 0} loading={index === 0 ? "eager" : "lazy"} sizes="100vw" />
+                                    <Image
+                                        src={item}
+                                        alt=""
+                                        fill
+                                        className="object-cover blur-xl scale-110"
+                                        priority={index === 0}
+                                        loading={index === 0 ? "eager" : "lazy"}
+                                        sizes="100vw"
+                                    />
 
                                     {/* main image (FADE REAL) */}
                                     <div className="absolute inset-0 z-10 flex items-center justify-center">
@@ -158,7 +244,14 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                                 <div className="relative z-10 w-full max-w-4xl">
                                     <div className="flex flex-col items-center">
                                         <div className="relative w-full h-[250px] md:h-[400px]">
-                                            <Image src={model.image} alt={model.name} fill className="object-contain" sizes="(max-width: 768px) 100vw, 800px" loading="lazy" />
+                                            <Image
+                                                src={model.image}
+                                                alt={model.name}
+                                                fill
+                                                className="object-contain"
+                                                sizes="(max-width: 768px) 100vw, 800px"
+                                                loading="lazy"
+                                            />
                                         </div>
 
                                         {/* Specs Grid - Specific 4 columns */}
@@ -210,7 +303,14 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                         <div className="flex flex-col gap-4">
                             {/* Promo Image */}
                             <div className="relative flex-1 bg-black rounded-md overflow-hidden group shadow min-h-[200px]">
-                                <Image src="/images/sources/sacxe.webp" alt="Promo" fill className="object-cover group-hover:scale-105 transition-all duration-700" loading="lazy" sizes="(max-width: 768px) 100vw, 50vw" />
+                                <Image
+                                    src="/images/sources/sacxe.webp"
+                                    alt="Promo"
+                                    fill
+                                    className="object-cover group-hover:scale-105 transition-all duration-700"
+                                    loading="lazy"
+                                    sizes="(max-width: 768px) 100vw, 50vw"
+                                />
                                 <div className="absolute inset-0 bg-blue-900/30"></div>
                                 <div className="absolute bottom-0 left-0  text-white text-xl  z-10 w-full  p-2 bg-black/50">
                                     <p className="uppercase font-bold">Pin & Trạm sạc ô tô điện</p>
@@ -276,8 +376,8 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                     <div className="md:w-[45%] lg:w-[40%] flex flex-col justify-center items-center md:items-start text-center md:text-left mb-12 md:mb-0 md:pl-12 lg:pl-16 relative z-20">
                         <h2 className="text-[#333] text-lg md:text-xl font-bold uppercase mb-4 tracking-wide pr-4">BẢO HÀNH &amp; DỊCH VỤ</h2>
                         <p className="text-gray-600 text-xs md:text-[13px] lg:text-sm mb-8 max-w-sm leading-relaxed pr-2">
-                            VinFast Lê Quang Đạo đã đầu tư nghiêm túc và bài bản để phát triển hệ thống Showroom, Nhà phân phối và xưởng dịch vụ rộng khắp, đáp ứng tối đa
-                            nhu cầu của Khách hàng.
+                            VinFast đã đầu tư nghiêm túc và bài bản để phát triển hệ thống Showroom, Nhà phân phối và xưởng dịch vụ rộng khắp, đáp ứng tối đa nhu cầu của
+                            Khách hàng.
                         </p>
                         <div className="flex flex-row gap-3">
                             <Button className="bg-[#0088FF] hover:bg-[#0066CC] text-white font-bold rounded px-5 md:px-7 h-10 text-[10px] md:text-[11px] uppercase shadow transition-all tracking-wider md:w-auto w-[160px]">
@@ -293,7 +393,14 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                     </div>
 
                     <div className="md:w-[55%] lg:w-[60%] relative h-[300px] md:h-[500px] w-full flex items-center justify-center md:justify-end relative z-10">
-                        <Image src="/images/sources/vf9mn.webp" alt="VinFast VF9 Service" fill className="object-contain md:object-right drop-shadow-2xl z-10" loading="lazy" sizes="(max-width: 768px) 100vw, 60vw" />
+                        <Image
+                            src="/images/sources/vf9mn.webp"
+                            alt="VinFast VF9 Service"
+                            fill
+                            className="object-contain md:object-right drop-shadow-2xl z-10"
+                            loading="lazy"
+                            sizes="(max-width: 768px) 100vw, 60vw"
+                        />
                     </div>
                 </div>
             </section>
@@ -368,47 +475,60 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {displayNews.map((n) => (
-                            <article
-                                key={n.id}
-                                className="group cursor-pointer bg-white overflow-hidden hover:shadow-sm transition-shadow rounded-md border border-gray-100 flex flex-col h-full shadow-sm"
-                            >
-                                <div className="relative aspect-[16/9] w-full bg-gray-100">
-                                    <Image
-                                        src={n.image || `https://placehold.co/600x340/e9ecef/dee2e6?text=+`}
-                                        alt={n.title}
-                                        fill
-                                        className="object-cover group-hover:scale-105 transition-all duration-500"
-                                        loading="lazy"
-                                        sizes="(max-width: 768px) 100vw, 50vw"
-                                    />
-                                    <div className="absolute top-2 left-2 bg-[#0062BD] text-white text-[10px] font-bold px-2 py-1 uppercase rounded-sm">
-                                        {n.category || "Tin tức"}
+                        {displayNews.map((n) => {
+                            const slug = toSlug(n.title);
+                            return (
+                                <Link
+                                    key={n.id}
+                                    href={`/tin-tuc/${slug}`}
+                                    className="group cursor-pointer bg-white overflow-hidden hover:shadow-sm transition-shadow rounded-md border border-gray-100 flex flex-col h-full shadow-sm"
+                                >
+                                    <div className="relative aspect-[16/9] w-full bg-gray-100">
+                                        <Image
+                                            src={n.image || `https://placehold.co/600x340/e9ecef/dee2e6?text=+`}
+                                            alt={n.title}
+                                            fill
+                                            className="object-cover group-hover:scale-105 transition-all duration-500"
+                                            loading="lazy"
+                                            sizes="(max-width: 768px) 100vw, 50vw"
+                                        />
+                                        <div className="absolute top-2 left-2 bg-[#0062BD] text-white text-[10px] font-bold px-2 py-1 uppercase rounded-sm">
+                                            {n.category || "Tin tức"}
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="p-4 flex flex-col flex-1">
-                                    <h4 className="font-semibold text-sm leading-snug group-hover:text-[#0062BD] transition-all line-clamp-2 mb-2">{n.title}</h4>
-                                    <p className="text-xs text-gray-500 line-clamp-2 mb-4 leading-relaxed">{n.description}</p>
-                                    <div className="mt-auto flex items-center justify-between text-[#0062BD] font-bold text-xs border-t border-gray-100 pt-3">
-                                        <span>Xem chi tiết</span>
-                                        <span>&rarr;</span>
+                                    <div className="p-4 flex flex-col flex-1">
+                                        <h4 className="font-semibold text-sm leading-snug group-hover:text-[#0062BD] transition-all line-clamp-2 mb-2">{n.title}</h4>
+                                        <p className="text-xs text-gray-500 line-clamp-2 mb-4 leading-relaxed">{stripHtml(n.description)}</p>
+                                        <div className="mt-auto flex items-center justify-between text-[#0062BD] font-bold text-xs border-t border-gray-100 pt-3">
+                                            <span>Xem chi tiết</span>
+                                            <span>&rarr;</span>
+                                        </div>
                                     </div>
-                                </div>
-                            </article>
-                        ))}
+                                </Link>
+                            );
+                        })}
                     </div>
 
                     <div id="name_registration" className="flex justify-center mt-10">
-                        <Button variant="outline" className="border-[#0062BD] text-[#0062BD] font-bold rounded-full px-10 hover:bg-blue-50">
-                            XEM THÊM TIN TỨC
-                        </Button>
+                        <Link href="/tin-tuc">
+                            <Button variant="outline" className="border-[#0062BD] text-[#0062BD] font-bold rounded-full px-10 hover:bg-blue-50">
+                                XEM THÊM TIN TỨC
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             </section>
 
             {/* Lead Form */}
             <section className="relative py-16 md:py-24 bg-[#1a1c24] border-t border-zinc-800 flex justify-center overflow-hidden">
-                <Image src="/images/sources/contact.webp" alt="VinFast Registration Background" fill className="object-cover  object-left  opacity-80" loading="lazy" sizes="100vw" />
+                <Image
+                    src="/images/sources/contact.webp"
+                    alt="VinFast Registration Background"
+                    fill
+                    className="object-cover  object-left  opacity-80"
+                    loading="lazy"
+                    sizes="100vw"
+                />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-[#1e3a5a]/60" />
 
                 <div className="relative container mx-auto px-4 max-w-3xl z-10">
@@ -417,20 +537,34 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                         <p className="text-[11px] md:text-[13px] text-gray-200">Đăng ký nhận thông tin chương trình khuyến mãi, dịch vụ VinFast.</p>
                     </div>
 
-                    <div className="flex flex-col gap-3 md:gap-4 max-w-2xl mx-auto">
+                    <form onSubmit={handleBottomLeadSubmit} className="flex flex-col gap-3 md:gap-4 max-w-2xl mx-auto">
                         <Input
+                            required
+                            value={leadName}
+                            onChange={(e) => setLeadName(e.target.value)}
                             className="bg-white border-0 text-gray-900 placeholder:text-gray-500 rounded-sm h-[44px] md:h-[50px] px-4 focus:ring-2 focus:ring-[#0062BD] transition-all text-[13px] md:text-sm w-full shadow-inner"
                             placeholder="Họ và tên"
                         />
                         <Input
+                            required
+                            type="tel"
+                            value={leadPhone}
+                            onChange={(e) => setLeadPhone(e.target.value)}
                             className="bg-white border-0 text-gray-900 placeholder:text-gray-500 rounded-sm h-[44px] md:h-[50px] px-4 focus:ring-2 focus:ring-[#0062BD] transition-all text-[13px] md:text-sm w-full shadow-inner"
                             placeholder="Số điện thoại"
                         />
                         <div className="relative">
-                            <select className="w-full bg-white border-0 text-gray-600 rounded-sm h-[44px] md:h-[50px] px-4 appearance-none focus:ring-2 focus:ring-[#0062BD] transition-all text-[13px] md:text-sm outline-none cursor-pointer shadow-inner">
-                                <option>-- Chọn dòng xe VinFast --</option>
+                            <select
+                                required
+                                value={leadCar}
+                                onChange={(e) => setLeadCar(e.target.value)}
+                                className="w-full bg-white border-0 text-gray-600 rounded-sm h-[44px] md:h-[50px] px-4 appearance-none focus:ring-2 focus:ring-[#0062BD] transition-all text-[13px] md:text-sm outline-none cursor-pointer shadow-inner"
+                            >
+                                <option value="">-- Chọn dòng xe VinFast --</option>
                                 {displayCars.map((item) => (
-                                    <option key={item.id}>{item.name}</option>
+                                    <option key={item.id} value={item.name}>
+                                        {item.name}
+                                    </option>
                                 ))}
                             </select>
                             <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
@@ -440,10 +574,14 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                             </div>
                         </div>
 
-                        <Button className="bg-[#0088FF] hover:bg-[#0066CC] text-white font-bold rounded-sm h-[38px] md:h-[42px] text-[11px] md:text-xs uppercase transition-all px-8 md:px-10 self-start mt-2 md:mt-4 shadow-lg border-none">
-                            ĐĂNG KÝ NGAY
+                        <Button
+                            type="submit"
+                            disabled={leadLoading}
+                            className="bg-[#0088FF] hover:bg-[#0066CC] text-white font-bold rounded-sm h-[38px] md:h-[42px] text-[11px] md:text-xs uppercase transition-all px-8 md:px-10 self-start mt-2 md:mt-4 shadow-lg border-none"
+                        >
+                            {leadLoading ? "ĐANG GỬI..." : "ĐĂNG KÝ NGAY"}
                         </Button>
-                    </div>
+                    </form>
 
                     <p className="mt-12 text-center text-[10px] md:text-[11px] text-gray-300 max-w-xl mx-auto leading-relaxed">
                         Bằng cách đăng ký, Quý khách xác nhận đã đọc, hiểu và đồng ý với Chính sách Quyền riêng tư của VinFast.
