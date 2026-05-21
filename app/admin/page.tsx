@@ -106,7 +106,13 @@ export default function AdminPage() {
         }
 
         const { data: nData } = await supabase.from("news").select("*").order("created_at", { ascending: false });
-        if (nData) setNews(nData);
+        if (nData) {
+            setNews(nData);
+            if (nData.length > 0) {
+                const hasNewsPinned = nData.some(n => "is_pinned" in n);
+                setDbHasNewsPinnedColumn(hasNewsPinned);
+            }
+        }
 
         const { data: setts } = await supabase.from("general_settings").select("*").single();
         if (setts) setSettings(setts);
@@ -157,6 +163,8 @@ export default function AdminPage() {
     const [newsForm, setNewsForm] = useState({ title: "", description: "", category: "Tin tức" });
     const [newsFile, setNewsFile] = useState<File | null>(null);
     const [editingNews, setEditingNews] = useState<any | null>(null);
+    const [dbHasNewsPinnedColumn, setDbHasNewsPinnedColumn] = useState(true);
+    const [newsIsPinned, setNewsIsPinned] = useState(false);
 
     const handleNewsSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -169,10 +177,19 @@ export default function AdminPage() {
                 imageUrl = await uploadToCloudinary(newsFile);
             }
 
+            const newsPayload: any = {
+                ...newsForm,
+                image: imageUrl,
+            };
+
+            if (dbHasNewsPinnedColumn) {
+                newsPayload.is_pinned = newsIsPinned;
+            }
+
             if (editingNews) {
                 const { error } = await supabase
                     .from("news")
-                    .update({ ...newsForm, image: imageUrl })
+                    .update(newsPayload)
                     .eq("id", editingNews.id);
                 if (error) throw error;
                 await revalidateCacheAction("news");
@@ -181,7 +198,7 @@ export default function AdminPage() {
             } else {
                 const { error } = await supabase
                     .from("news")
-                    .insert([{ ...newsForm, image: imageUrl }]);
+                    .insert([newsPayload]);
                 if (error) throw error;
                 await revalidateCacheAction("news");
                 alert("Thêm Tin Tức thành công!");
@@ -189,11 +206,16 @@ export default function AdminPage() {
 
             setNewsForm({ title: "", description: "", category: "Tin tức" });
             setNewsFile(null);
+            setNewsIsPinned(false);
             const fileInput = document.getElementById("news-upload-input") as HTMLInputElement;
             if (fileInput) fileInput.value = "";
             fetchData();
         } catch (error: any) {
-            alert("Lỗi: " + error.message);
+            if (error.message && (error.message.includes("is_pinned") || error.code === "42703")) {
+                alert("Lỗi: Cột 'is_pinned' chưa tồn tại trong bảng news của cơ sở dữ liệu. Vui lòng chạy câu lệnh SQL nâng cấp ở banner thông báo màu vàng!");
+            } else {
+                alert("Lỗi: " + error.message);
+            }
         }
         setLoading(false);
     };
@@ -206,6 +228,7 @@ export default function AdminPage() {
             category: n.category || "Tin tức",
         });
         setNewsFile(null);
+        setNewsIsPinned(!!n.is_pinned);
         const formElement = document.getElementById("news-form-title");
         if (formElement) {
             formElement.scrollIntoView({ behavior: "smooth" });
@@ -641,7 +664,35 @@ export default function AdminPage() {
                 </TabsContent>
 
                 {/* TAB NEWS */}
-                <TabsContent value="news">
+                <TabsContent value="news" className="space-y-6">
+                    {!dbHasNewsPinnedColumn && (
+                        <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm animate-in fade-in slide-in-from-top-4 duration-300">
+                            <div className="flex items-start gap-3">
+                                <span className="text-2xl mt-0.5">⚠️</span>
+                                <div>
+                                    <h4 className="text-sm font-bold text-amber-800">Cơ sở dữ liệu của bạn thiếu cột "is_pinned" trong bảng news</h4>
+                                    <p className="text-xs text-amber-700 mt-1 max-w-2xl leading-normal">
+                                        Để ghim tin tức lên Trang chủ, vui lòng truy cập **Supabase Dashboard** {"->"} **SQL Editor** và chạy câu lệnh bên phải. Hệ thống sẽ tự động kích hoạt tính năng ghim tin tức ngay lập tức!
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex flex-col gap-2 min-w-[280px]">
+                                <div className="bg-amber-950/5 text-amber-900 border border-amber-950/10 font-mono text-[10px] p-2 rounded select-all whitespace-nowrap overflow-x-auto">
+                                    ALTER TABLE news ADD COLUMN is_pinned BOOLEAN DEFAULT FALSE;
+                                </div>
+                                <button 
+                                    type="button"
+                                    onClick={() => {
+                                        navigator.clipboard.writeText("ALTER TABLE news ADD COLUMN is_pinned BOOLEAN DEFAULT FALSE;");
+                                        alert("Đã sao chép câu lệnh SQL!");
+                                    }}
+                                    className="bg-amber-700 hover:bg-amber-800 text-white font-bold text-[10px] uppercase py-1.5 px-3 rounded shadow transition-all self-end"
+                                >
+                                    Sao chép câu lệnh SQL
+                                </button>
+                            </div>
+                        </div>
+                    )}
                     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-8">
                         <h2 id="news-form-title" className="text-xl font-bold mb-4 text-[#0062BD]">
                             {editingNews ? `Sửa Tin Tức: "${editingNews.title}"` : "Thêm Tin Tức Mới"}
@@ -663,6 +714,23 @@ export default function AdminPage() {
                                     />
                                 </div>
                             </div>
+                            
+                            {dbHasNewsPinnedColumn && (
+                                <div className="flex items-center gap-2.5 bg-blue-50/50 border border-blue-100/50 p-3.5 rounded-xl shadow-sm">
+                                    <input
+                                        type="checkbox"
+                                        id="news-is-pinned"
+                                        checked={newsIsPinned}
+                                        onChange={(e) => setNewsIsPinned(e.target.checked)}
+                                        className="h-4 w-4 text-[#0088FF] focus:ring-[#0088FF] rounded border-gray-300 cursor-pointer"
+                                    />
+                                    <div className="flex flex-col cursor-pointer" onClick={() => setNewsIsPinned(!newsIsPinned)}>
+                                        <span className="text-xs font-bold text-gray-800">📌 Ghim lên trang chủ (Tin tức hoạt động)</span>
+                                        <span className="text-[10px] text-gray-500 mt-0.5">Bài viết được ghim sẽ hiển thị tại mục Tin Tức trên Trang chủ</span>
+                                    </div>
+                                </div>
+                            )}
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium mb-1">Thể loại</label>
@@ -687,6 +755,7 @@ export default function AdminPage() {
                                             setEditingNews(null);
                                             setNewsForm({ title: "", description: "", category: "Tin tức" });
                                             setNewsFile(null);
+                                            setNewsIsPinned(false);
                                             const fileInput = document.getElementById("news-upload-input") as HTMLInputElement;
                                             if (fileInput) fileInput.value = "";
                                         }}
@@ -704,6 +773,11 @@ export default function AdminPage() {
                                 <div className="relative aspect-[16/9] w-full bg-gray-100">
                                     <Image src={n.image} alt={n.title} fill className="object-cover" />
                                     <div className="absolute top-2 left-2 bg-[#0062BD] text-white text-[10px] font-bold px-2 py-1 rounded-sm">{n.category}</div>
+                                    {dbHasNewsPinnedColumn && n.is_pinned && (
+                                        <div className="absolute top-2 right-2 bg-blue-50 text-[#0062BD] border border-[#0062BD]/30 text-[9px] font-black px-2 py-1 rounded shadow-sm">
+                                            📌 GHIM
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="p-4 flex-1 flex flex-col">
                                     <h4 className="font-semibold text-sm line-clamp-2 mb-2">{n.title}</h4>

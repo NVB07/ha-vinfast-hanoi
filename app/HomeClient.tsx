@@ -143,9 +143,14 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
         setLeadPhone("");
         setLeadCar("");
     };
+    // Support dynamic is_pinned pinning for News with Graceful Fallback
+    const dbNews = news || [];
+    const pinnedNews = dbNews.filter((n) => n.is_pinned === true);
     const displayNews =
-        news.length > 0
-            ? news
+        pinnedNews.length > 0
+            ? pinnedNews
+            : dbNews.length > 0
+            ? dbNews
             : [1, 2, 3, 4, 5, 6, 7, 8].map((i) => ({
                   id: i,
                   title: `Tập đoàn Vingroup chính thức ra mắt mẫu xe SUV thế hệ mới ${i} với công nghệ tự lái tiên tiến`,
