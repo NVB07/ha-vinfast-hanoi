@@ -1,14 +1,11 @@
 import React from "react";
 import Image from "next/image";
-import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
+import { getCachedGeneralSettings } from "@/utils/supabase/cached";
 
 export default async function CarPrivileges({ car }: { car: any }) {
     if (!car) return null;
 
-    const cookieStore = await cookies();
-    const supabase = createClient(cookieStore);
-    const { data: settings } = await supabase.from("general_settings").select("*").single();
+    const settings = await getCachedGeneralSettings();
     const phone = settings?.phone || settings?.zalo || "0345 726 001";
 
     return (

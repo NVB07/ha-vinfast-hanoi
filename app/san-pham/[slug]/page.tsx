@@ -1,6 +1,5 @@
 import { Metadata } from "next";
-import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
+import { getCachedCars } from "@/utils/supabase/cached";
 import { mockHomeCars } from "@/utils/mockData";
 import fs from "fs";
 import path from "path";
@@ -24,9 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const { slug } = await params;
 
     // Nạp dữ liệu DB để lấy thông tin SEO chính xác
-    const cookieStore = await cookies();
-    const supabase = createClient(cookieStore);
-    const { data: carsData } = await supabase.from("cars").select("*");
+    const carsData = await getCachedCars();
     const cars = carsData || [];
 
     const mergedCars = mockHomeCars.map((mockCar) => {
@@ -56,9 +53,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     const { slug } = await params;
 
     // Nạp dữ liệu DB
-    const cookieStore = await cookies();
-    const supabase = createClient(cookieStore);
-    const { data: carsData } = await supabase.from("cars").select("*");
+    const carsData = await getCachedCars();
     const cars = carsData || [];
 
     // Nối dữ liệu

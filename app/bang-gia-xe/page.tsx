@@ -1,5 +1,4 @@
-import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
+import { getCachedCars } from "@/utils/supabase/cached";
 import Image from "next/image";
 import { mockHomeCars } from "@/utils/mockData";
 
@@ -9,12 +8,9 @@ export const metadata = {
 };
 
 export default async function BangGiaXePage() {
-    const cookieStore = await cookies();
-    const supabase = createClient(cookieStore);
-
     let cars = [];
     try {
-        const { data } = await supabase.from("cars").select("*").order("id", { ascending: true });
+        const data = await getCachedCars();
         if (data) {
             cars = data;
         }

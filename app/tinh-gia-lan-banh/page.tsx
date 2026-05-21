@@ -1,6 +1,5 @@
 import React from "react";
-import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
+import { getCachedGeneralSettings } from "@/utils/supabase/cached";
 
 export const metadata = {
     title: "Tính Giá Lăn Bánh Xe VinFast | VinFast",
@@ -8,9 +7,7 @@ export const metadata = {
 };
 
 export default async function TinhGiaLanBanhPage() {
-    const cookieStore = await cookies();
-    const supabase = createClient(cookieStore);
-    const { data: settings } = await supabase.from("general_settings").select("*").single();
+    const settings = await getCachedGeneralSettings();
     const phone = settings?.phone || settings?.zalo || "1900 23 23 89";
 
     return (

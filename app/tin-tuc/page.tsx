@@ -1,5 +1,4 @@
-import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
+import { getCachedNews } from "@/utils/supabase/cached";
 import Image from "next/image";
 import Link from "next/link";
 import { toSlug, stripHtml } from "@/utils/slug";
@@ -11,16 +10,13 @@ export const metadata = {
 };
 
 export default async function NewsPage() {
-    const cookieStore = await cookies();
-    const supabase = createClient(cookieStore);
-
     let news: any[] = [];
 
     try {
-        const { data: newsResult } = await supabase.from("news").select("*").order("created_at", { ascending: false });
+        const newsResult = await getCachedNews();
         if (newsResult) news = newsResult;
     } catch (error) {
-        console.error("Lỗi khi tải tin tức từ Supabase:", error);
+        console.error("Lỗi khi tải tin tức từ Supabase cached:", error);
     }
 
     // Fallback mock data if DB is empty

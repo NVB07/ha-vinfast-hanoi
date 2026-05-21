@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockHomeCars, mockSliders } from "@/utils/mockData";
 import { stripHtml } from "@/utils/slug";
+import { revalidateCacheAction } from "@/app/actions/revalidate";
 
 const supabase = createClient();
 
@@ -54,6 +55,7 @@ export function EditCarForm({ mockCar, dbCar, onUpdated }: { mockCar: any; dbCar
         setLoading(true);
         try {
             await supabase.from("cars").upsert([updatedData]);
+            await revalidateCacheAction("cars");
             alert("Cập nhật thông tin Xe thành công!");
             onUpdated();
         } catch (error: any) {
@@ -181,6 +183,7 @@ export default function AdminPage() {
         try {
             const { error } = await supabase.from("general_settings").upsert([{ id: 1, ...settings }]);
             if (error) throw error;
+            await revalidateCacheAction("general_settings");
             alert("Lưu Cấu hình thành công!");
         } catch (error: any) {
             alert("Lỗi: " + error.message);
@@ -202,6 +205,7 @@ export default function AdminPage() {
             const insertData = await Promise.all(uploadPromises);
 
             await supabase.from("sliders").insert(insertData);
+            await revalidateCacheAction("sliders");
             alert(`Thêm ${insertData.length} Slider thành công!`);
 
             setSliderFiles(null);
@@ -240,6 +244,7 @@ export default function AdminPage() {
                     .update({ ...newsForm, image: imageUrl })
                     .eq("id", editingNews.id);
                 if (error) throw error;
+                await revalidateCacheAction("news");
                 alert("Cập nhật Tin Tức thành công!");
                 setEditingNews(null);
             } else {
@@ -248,6 +253,7 @@ export default function AdminPage() {
                     .from("news")
                     .insert([{ ...newsForm, image: imageUrl }]);
                 if (error) throw error;
+                await revalidateCacheAction("news");
                 alert("Thêm Tin Tức thành công!");
             }
 
@@ -279,6 +285,7 @@ export default function AdminPage() {
     const handleDelete = async (table: string, id: number) => {
         if (!confirm("Bạn có chắc chắn muốn xóa?")) return;
         await supabase.from(table).delete().eq("id", id);
+        await revalidateCacheAction(table);
         fetchData();
     };
 

@@ -4,13 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { Menu, User, Phone, ChevronDown } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
+import { getCachedGeneralSettings } from "@/utils/supabase/cached";
 
 export default async function Header() {
-    const cookieStore = await cookies();
-    const supabase = createClient(cookieStore);
-    const { data: settings } = await supabase.from("general_settings").select("*").single();
+    const settings = await getCachedGeneralSettings();
     const phone = settings?.phone || settings?.zalo || "1900 23 23 89";
 
     return (

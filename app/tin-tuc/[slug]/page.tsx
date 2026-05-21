@@ -1,6 +1,5 @@
 import { Metadata } from "next";
-import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
+import { getCachedNews } from "@/utils/supabase/cached";
 import Image from "next/image";
 import Link from "next/link";
 import { toSlug, stripHtml } from "@/utils/slug";
@@ -10,12 +9,9 @@ interface NewsDetailParams {
 }
 
 async function getArticle(slug: string) {
-    const cookieStore = await cookies();
-    const supabase = createClient(cookieStore);
-
     let news: any[] = [];
     try {
-        const { data: newsResult } = await supabase.from("news").select("*");
+        const newsResult = await getCachedNews();
         if (newsResult) news = newsResult;
     } catch (e) {
         console.error(e);
