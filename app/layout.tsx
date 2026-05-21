@@ -27,7 +27,7 @@ export const metadata: Metadata = {
         siteName: "VinFast Hà Nội",
         images: [
             {
-                url: "/images/sources/manhliet.webp",
+                url: "/images/promo_banner.png",
                 width: 1200,
                 height: 630,
                 alt: "Tinh Thần Việt Nam - VinFast",
@@ -37,6 +37,7 @@ export const metadata: Metadata = {
         type: "website",
     },
 };
+
 
 export default function RootLayout({
     children,
