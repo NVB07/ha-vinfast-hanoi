@@ -22,7 +22,7 @@ const DEFAULT_CONTACT: ContactInfo = {
     zalo: "0345726001",
     email: "vinfasthanoi@vingroup.net",
     address: "Hà Nội, Việt Nam",
-    facebook: "https://facebook.com/vinfasthanoi",
+    facebook: "hhttps://www.facebook.com/FanpageHaVinFastMienBac",
     tiktok: "",
     youtube: "",
 };
