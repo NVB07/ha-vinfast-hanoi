@@ -86,16 +86,30 @@ export default async function BangGiaXePage() {
                                                             <td className="p-3 px-4 text-gray-700 border-r border-gray-300 text-[15px]">
                                                                 Vinfast {car.name} Eco
                                                             </td>
-                                                            <td className="p-3 px-4 text-[#cc0000] font-bold text-[15px]">
-                                                                {car.price}
+                                                            <td className="p-3 px-4 text-[15px]">
+                                                                {car.price_promo ? (
+                                                                    <div className="flex flex-col">
+                                                                        <span className="line-through text-gray-400 text-xs font-normal">{car.price}</span>
+                                                                        <span className="text-[#cc0000] font-bold">{car.price_promo}</span>
+                                                                    </div>
+                                                                ) : (
+                                                                    <span className="text-[#cc0000] font-bold">{car.price}</span>
+                                                                )}
                                                             </td>
                                                         </tr>
                                                         <tr className="bg-white">
                                                             <td className="p-3 px-4 text-gray-700 border-r border-gray-300 text-[15px]">
                                                                 Vinfast {car.name} Plus
                                                             </td>
-                                                            <td className="p-3 px-4 text-[#cc0000] font-bold text-[15px]">
-                                                                {car.price_plus}
+                                                            <td className="p-3 px-4 text-[15px]">
+                                                                {car.price_plus_promo ? (
+                                                                    <div className="flex flex-col">
+                                                                        <span className="line-through text-gray-400 text-xs font-normal">{car.price_plus}</span>
+                                                                        <span className="text-[#cc0000] font-bold">{car.price_plus_promo}</span>
+                                                                    </div>
+                                                                ) : (
+                                                                    <span className="text-[#cc0000] font-bold">{car.price_plus}</span>
+                                                                )}
                                                             </td>
                                                         </tr>
                                                     </>
@@ -104,8 +118,15 @@ export default async function BangGiaXePage() {
                                                         <td className="p-3 px-4 text-gray-700 border-r border-gray-300 text-[15px]">
                                                             Vinfast {car.name}
                                                         </td>
-                                                        <td className="p-3 px-4 text-[#cc0000] font-bold text-[15px]">
-                                                            {car.price}
+                                                        <td className="p-3 px-4 text-[15px]">
+                                                            {car.price_promo ? (
+                                                                <div className="flex flex-col">
+                                                                    <span className="line-through text-gray-400 text-xs font-normal">{car.price}</span>
+                                                                    <span className="text-[#cc0000] font-bold">{car.price_promo}</span>
+                                                                </div>
+                                                            ) : (
+                                                                <span className="text-[#cc0000] font-bold">{car.price}</span>
+                                                            )}
                                                         </td>
                                                     </tr>
                                                 )}

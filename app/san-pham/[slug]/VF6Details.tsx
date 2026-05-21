@@ -149,7 +149,15 @@ export default function VF6Details({ car }: { car: any }) {
                         <div className="flex-1 bg-white/60 backdrop-blur-md rounded-[2.5rem] shadow-2xl p-6 md:p-8">
                             <h3 className="text-xl md:text-2xl font-black uppercase text-gray-800 text-center mb-1 tracking-wide">VF6 ECO BAO GỒM PIN</h3>
                             <p className="text-center font-black text-gray-800 mb-6 md:mb-8 text-sm md:text-base pb-6">
-                                Giá: <span className="text-[#cc0000] text-xl md:text-2xl">{car.price || "689.000.000 VNĐ"}</span>
+                                Giá:{" "}
+                                {car.price_promo ? (
+                                    <>
+                                        <span className="line-through text-gray-400 text-xs md:text-sm mr-2">{car.price || "689.000.000 VNĐ"}</span>
+                                        <span className="text-[#cc0000] text-xl md:text-2xl">{car.price_promo}</span>
+                                    </>
+                                ) : (
+                                    <span className="text-[#cc0000] text-xl md:text-2xl">{car.price || "689.000.000 VNĐ"}</span>
+                                )}
                             </p>
 
                             <div className="flex flex-col gap-[9px] md:gap-3 text-[10px] md:text-xs px-2 md:px-0">
@@ -241,7 +249,15 @@ export default function VF6Details({ car }: { car: any }) {
                         <div className="flex-1 bg-white/60 backdrop-blur-md rounded-[2.5rem] shadow-2xl p-6 md:p-8">
                             <h3 className="text-xl md:text-2xl font-black uppercase text-gray-800 text-center mb-1 tracking-wide">VF6 PLUS BAO GỒM PIN</h3>
                             <p className="text-center font-black text-gray-800 mb-6 md:mb-8 text-sm md:text-base pb-6">
-                                Giá: <span className="text-[#cc0000] text-xl md:text-2xl">{car.price_plus || "749.000.000 VNĐ"}</span>
+                                Giá:{" "}
+                                {car.price_plus_promo ? (
+                                    <>
+                                        <span className="line-through text-gray-400 text-xs md:text-sm mr-2">{car.price_plus || "749.000.000 VNĐ"}</span>
+                                        <span className="text-[#cc0000] text-xl md:text-2xl">{car.price_plus_promo}</span>
+                                    </>
+                                ) : (
+                                    <span className="text-[#cc0000] text-xl md:text-2xl">{car.price_plus || "749.000.000 VNĐ"}</span>
+                                )}
                             </p>
 
                             <div className="flex flex-col gap-[9px] md:gap-3 text-[10px] md:text-xs px-2 md:px-0">

@@ -41,10 +41,12 @@ export function EditCarForm({ mockCar, dbCar, onUpdated }: { mockCar: any; dbCar
             image: displayCar.image,
             type: formData.get("type"),
             price: formData.get("price"),
+            price_promo: formData.get("price_promo"),
             distance: formData.get("distance"),
             slot: formData.get("slot"),
             power: formData.get("power"),
             price_plus: formData.get("price_plus"),
+            price_plus_promo: formData.get("price_plus_promo"),
             distance_plus: formData.get("distance_plus"),
             power_plus: formData.get("power_plus"),
             battery_price: formData.get("battery_price"),
@@ -93,6 +95,10 @@ export function EditCarForm({ mockCar, dbCar, onUpdated }: { mockCar: any; dbCar
                         <Input name="price" defaultValue={displayCar.price} className="h-7 text-xs px-2 bg-white" />
                     </div>
                     <div>
+                        <label className="block text-[10px] font-semibold text-[#cc0000] mb-0.5">Giá ưu đãi BASE / ECO</label>
+                        <Input name="price_promo" defaultValue={displayCar.price_promo} className="h-7 text-xs px-2 bg-white" placeholder="Ví dụ: 499.000.000 VNĐ" />
+                    </div>
+                    <div>
                         <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Quãng đường (Base/Eco)</label>
                         <Input name="distance" defaultValue={displayCar.distance} className="h-7 text-xs px-2 bg-white" />
                     </div>
@@ -107,6 +113,10 @@ export function EditCarForm({ mockCar, dbCar, onUpdated }: { mockCar: any; dbCar
                     <div>
                         <label className="block text-[10px] font-semibold text-rose-600 mb-0.5">Giá bản PLUS</label>
                         <Input name="price_plus" defaultValue={displayCar.price_plus} className="h-7 text-xs px-2 bg-white" />
+                    </div>
+                    <div>
+                        <label className="block text-[10px] font-semibold text-[#cc0000] mb-0.5">Giá ưu đãi PLUS</label>
+                        <Input name="price_plus_promo" defaultValue={displayCar.price_plus_promo} className="h-7 text-xs px-2 bg-white" placeholder="Ví dụ: 719.000.000 VNĐ" />
                     </div>
                     <div>
                         <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Quãng đường (Plus)</label>

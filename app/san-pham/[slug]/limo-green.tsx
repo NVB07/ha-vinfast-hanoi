@@ -95,7 +95,15 @@ export default function LIMOGREENDetails({ car }: { car: any }) {
                     <div className="relative z-10 bg-white/60 backdrop-blur-md rounded-[2.5rem] shadow-2xl p-6 md:p-8 w-[95%] sm:w-[85%] md:w-[450px] my-10">
                         <h3 className="text-2xl md:text-3xl font-black uppercase text-gray-800 text-center mb-1 tracking-wide">VINFAST LIMO GREEN</h3>
                         <p className="text-center font-black text-gray-800 mb-6 md:mb-8 text-sm md:text-base pb-6">
-                            Giá xanh SM: <span className="text-[#cc0000] text-xl md:text-2xl">{car.price}</span>
+                            Giá xanh SM:{" "}
+                            {car.price_promo ? (
+                                <>
+                                    <span className="line-through text-gray-400 text-sm md:text-base mr-2">{car.price}</span>
+                                    <span className="text-[#cc0000] text-xl md:text-2xl">{car.price_promo}</span>
+                                </>
+                            ) : (
+                                <span className="text-[#cc0000] text-xl md:text-2xl">{car.price}</span>
+                            )}
                         </p>
 
                         <div className="flex flex-col gap-[9px] md:gap-3 text-[10px] md:text-xs px-2 md:px-0">

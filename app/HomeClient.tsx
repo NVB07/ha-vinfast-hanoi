@@ -276,7 +276,16 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                                             </div>
                                             <div className="flex-1 flex flex-col items-center text-center px-1 md:px-4">
                                                 <div className="text-[11px] text-gray-500 mb-1">Giá chỉ từ</div>
-                                                <div className="text-xs md:text-sm font-bold text-gray-800">{model.price}</div>
+                                                <div className="text-xs md:text-sm font-bold text-gray-800">
+                                                    {model.price_promo ? (
+                                                        <span className="flex flex-col items-center">
+                                                            <span className="line-through text-gray-400 text-[10px] md:text-xs font-normal mb-0.5">{model.price}</span>
+                                                            <span className="text-[#cc0000] font-bold">{model.price_promo}</span>
+                                                        </span>
+                                                    ) : (
+                                                        <span>{model.price}</span>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                         {/* CTAs */}

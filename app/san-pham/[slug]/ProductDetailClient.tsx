@@ -150,15 +150,45 @@ export default function ProductDetailClient({ car, sliderImages }: { car: any; s
                         <h2 className="uppercase font-bold text-gray-800 mb-1.5 text-base md:text-lg">
                             VINFAST {car.name} {car.price_plus ? "ECO" : ""}
                         </h2>
-                        <p className="text-[11px] md:text-xs text-gray-500 mb-2 font-medium">Giá niêm yết</p>
-                        <p className="text-xl md:text-2xl font-black text-[#0088FF]">{car.price}</p>
+                        {car.price_promo ? (
+                            <>
+                                <div className="flex justify-between items-baseline mb-1">
+                                    <span className="text-[11px] md:text-xs text-gray-500 font-medium">Giá niêm yết</span>
+                                    <span className="line-through text-gray-400 text-xs md:text-sm">{car.price}</span>
+                                </div>
+                                <div className="flex justify-between items-baseline">
+                                    <span className="text-[11px] md:text-xs text-[#cc0000] font-bold">Giá ưu đãi</span>
+                                    <span className="text-xl md:text-2xl font-black text-[#cc0000]">{car.price_promo}</span>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <p className="text-[11px] md:text-xs text-gray-500 mb-2 font-medium">Giá niêm yết</p>
+                                <p className="text-xl md:text-2xl font-black text-[#0088FF]">{car.price}</p>
+                            </>
+                        )}
                     </div>
 
                     {car.price_plus && (
                         <div className="flex-1 border border-rose-500/30 rounded-2xl bg-rose-50/50 p-5 md:p-6 outline outline-1 outline-offset-[-1px] outline-rose-500/20 shadow-sm">
                             <h2 className="uppercase font-bold text-gray-800 mb-1.5 text-base md:text-lg">VINFAST {car.name} PLUS</h2>
-                            <p className="text-[11px] md:text-xs text-gray-500 mb-2 font-medium">Giá niêm yết</p>
-                            <p className="text-xl md:text-2xl font-black text-rose-600">{car.price_plus}</p>
+                            {car.price_plus_promo ? (
+                                <>
+                                    <div className="flex justify-between items-baseline mb-1">
+                                        <span className="text-[11px] md:text-xs text-gray-500 font-medium">Giá niêm yết</span>
+                                        <span className="line-through text-gray-400 text-xs md:text-sm">{car.price_plus}</span>
+                                    </div>
+                                    <div className="flex justify-between items-baseline">
+                                        <span className="text-[11px] md:text-xs text-[#cc0000] font-bold">Giá ưu đãi</span>
+                                        <span className="text-xl md:text-2xl font-black text-[#cc0000]">{car.price_plus_promo}</span>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <p className="text-[11px] md:text-xs text-gray-500 mb-2 font-medium">Giá niêm yết</p>
+                                    <p className="text-xl md:text-2xl font-black text-rose-600">{car.price_plus}</p>
+                                </>
+                            )}
                         </div>
                     )}
                 </div>
