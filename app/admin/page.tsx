@@ -27,6 +27,20 @@ const quillModules = {
     ],
 };
 
+const isSystemDefaultCar = (name?: string, id?: number) => {
+    if (id !== undefined && id !== null) {
+        return id <= 12;
+    }
+    if (!name) return false;
+    const clean = name.toLowerCase().replace(/\s+/g, "");
+    const defaultPatterns = [
+        "vf3", "vf5", "vf6", "vf7", "vf8", "vf9", 
+        "miniogreen", "minio", "heriogreen", "herio", "neriogreen", "nerio", "limogreen", "limo", 
+        "ecvan", "ec", "ebus"
+    ];
+    return defaultPatterns.includes(clean);
+};
+
 export default function AdminPage() {
     const [loading, setLoading] = useState(false);
     const [sliders, setSliders] = useState<any[]>([]);
@@ -47,6 +61,8 @@ export default function AdminPage() {
     const [editingCar, setEditingCar] = useState<any | null>(null);
     const [dbHasPinnedColumn, setDbHasPinnedColumn] = useState(true);
     const [carIsPinned, setCarIsPinned] = useState(false);
+    const [dbHasMoreInfoColumn, setDbHasMoreInfoColumn] = useState(true);
+    const [carMoreInfo, setCarMoreInfo] = useState("");
     const [carForm, setCarForm] = useState({
         name: "",
         type: "",
@@ -82,8 +98,10 @@ export default function AdminPage() {
         if (cData) {
             setCars(cData);
             if (cData.length > 0) {
-                const hasPinnedCol = "is_pinned" in cData[0];
+                const hasPinnedCol = cData.some(car => "is_pinned" in car);
                 setDbHasPinnedColumn(hasPinnedCol);
+                const hasMoreInfoCol = cData.some(car => "more_info" in car);
+                setDbHasMoreInfoColumn(hasMoreInfoCol);
             }
         }
 
@@ -205,6 +223,7 @@ export default function AdminPage() {
     const handleAddCarClick = () => {
         setEditingCar(null);
         setCarIsPinned(false);
+        setCarMoreInfo("");
         setCarForm({
             name: "",
             type: "",
@@ -231,6 +250,7 @@ export default function AdminPage() {
     const handleEditCarClick = (car: any) => {
         setEditingCar(car);
         setCarIsPinned(!!car.is_pinned);
+        setCarMoreInfo(car.more_info || "");
         setCarForm({
             name: car.name || "",
             type: car.type || "",
@@ -268,7 +288,8 @@ export default function AdminPage() {
     };
 
     const handleDeleteCar = async (id: number) => {
-        if (id <= 12) {
+        const car = displayCars.find((c) => c.id === id);
+        if (car && isSystemDefaultCar(car.name, car.id)) {
             alert("Không thể xóa dòng xe mặc định của hệ thống!");
             return;
         }
@@ -289,6 +310,27 @@ export default function AdminPage() {
     const handleCarSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!carForm.name.trim()) return alert("Vui lòng điền Tên xe!");
+
+        // Kiểm tra trùng tên xe (không phân biệt chữ hoa thường và khoảng trắng)
+        const cleanInput = carForm.name.toLowerCase().replace(/\s+/g, "");
+        if (!editingCar) {
+            const nameExists = displayCars.some(
+                (c) => c.name.toLowerCase().replace(/\s+/g, "") === cleanInput
+            );
+            if (nameExists) {
+                alert(`Lỗi: Tên xe "${carForm.name}" đã tồn tại trên hệ thống (hoặc trùng với xe mặc định)! Vui lòng chọn tên khác.`);
+                return;
+            }
+        } else {
+            const nameExistsOther = displayCars.some(
+                (c) => c.id !== editingCar.id && c.name.toLowerCase().replace(/\s+/g, "") === cleanInput
+            );
+            if (nameExistsOther) {
+                alert(`Lỗi: Tên xe "${carForm.name}" trùng với tên của một xe khác đang có trên hệ thống! Vui lòng chọn tên khác.`);
+                return;
+            }
+        }
+
         setLoading(true);
         try {
             let finalImageUrl = carImageUrl;
@@ -330,10 +372,19 @@ export default function AdminPage() {
 
             if (editingCar) {
                 carPayload.id = editingCar.id;
+            } else {
+                // Tự động sinh ID duy nhất và an toàn (>= 13) cho xe mới thêm để tránh xung đột với chuỗi sequence trong PostgreSQL (gây ghi đè xe có sẵn)
+                const maxId = cars.reduce((max, car) => (car.id > max ? car.id : max), 12);
+                carPayload.id = maxId + 1;
             }
 
             if (dbHasPinnedColumn) {
                 carPayload.is_pinned = carIsPinned;
+            }
+
+            const isCustomCar = !editingCar || !isSystemDefaultCar(carForm.name, editingCar.id);
+            if (dbHasMoreInfoColumn && isCustomCar) {
+                carPayload.more_info = carMoreInfo;
             }
 
             const { error } = await supabase.from("cars").upsert([carPayload]);
@@ -346,6 +397,8 @@ export default function AdminPage() {
         } catch (error: any) {
             if (error.message && (error.message.includes("is_pinned") || error.code === "42703")) {
                 alert("Lỗi: Cột 'is_pinned' chưa tồn tại trong cơ sở dữ liệu. Vui lòng chạy câu lệnh SQL nâng cấp ở banner thông báo màu vàng!");
+            } else if (error.message && (error.message.includes("more_info") || error.code === "42703")) {
+                alert("Lỗi: Cột 'more_info' chưa tồn tại trong cơ sở dữ liệu. Vui lòng chạy câu lệnh SQL nâng cấp ở banner thông báo màu vàng!");
             } else {
                 alert("Lỗi khi lưu thông tin xe: " + error.message);
             }
@@ -439,6 +492,33 @@ export default function AdminPage() {
                                 <button 
                                     onClick={() => {
                                         navigator.clipboard.writeText("ALTER TABLE cars ADD COLUMN is_pinned BOOLEAN DEFAULT FALSE;");
+                                        alert("Đã sao chép câu lệnh SQL!");
+                                    }}
+                                    className="bg-amber-700 hover:bg-amber-800 text-white font-bold text-[10px] uppercase py-1.5 px-3 rounded shadow transition-all self-end"
+                                >
+                                    Sao chép câu lệnh SQL
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                    {!dbHasMoreInfoColumn && (
+                        <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm animate-in fade-in slide-in-from-top-4 duration-300">
+                            <div className="flex items-start gap-3">
+                                <span className="text-2xl mt-0.5">⚠️</span>
+                                <div>
+                                    <h4 className="text-sm font-bold text-amber-800">Cơ sở dữ liệu của bạn thiếu cột "more_info"</h4>
+                                    <p className="text-xs text-amber-700 mt-1 max-w-2xl leading-normal">
+                                        Để thêm thông tin chi tiết (Rich Text) cho các xe tự thêm, vui lòng truy cập **Supabase Dashboard** {"->"} **SQL Editor** và chạy câu lệnh bên phải. Hệ thống sẽ tự động kích hoạt tính năng này ngay lập tức!
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex flex-col gap-2 min-w-[280px]">
+                                <div className="bg-amber-950/5 text-amber-900 border border-amber-950/10 font-mono text-[10px] p-2 rounded select-all whitespace-nowrap overflow-x-auto">
+                                    ALTER TABLE cars ADD COLUMN more_info TEXT;
+                                </div>
+                                <button 
+                                    onClick={() => {
+                                        navigator.clipboard.writeText("ALTER TABLE cars ADD COLUMN more_info TEXT;");
                                         alert("Đã sao chép câu lệnh SQL!");
                                     }}
                                     className="bg-amber-700 hover:bg-amber-800 text-white font-bold text-[10px] uppercase py-1.5 px-3 rounded shadow transition-all self-end"
@@ -953,6 +1033,22 @@ export default function AdminPage() {
                                     />
                                 </div>
                             </div>
+
+                            {/* SECTION 6: DETAILED ADDITIONAL INFO (Rich Text) */}
+                            {dbHasMoreInfoColumn && (!editingCar || !isSystemDefaultCar(editingCar.name, editingCar.id)) && (
+                                <div className="space-y-4 pt-2">
+                                    <h4 className="font-bold text-xs text-[#0062BD] uppercase tracking-wider border-b pb-1.5">6. Thông tin liên quan (Hiển thị dưới Đặc quyền sở hữu)</h4>
+                                    <div className="bg-white [&_.ql-editor]:min-h-[140px] [&_.ql-editor]:text-xs rounded-xl overflow-hidden border border-gray-200">
+                                        <ReactQuill
+                                            theme="snow"
+                                            value={carMoreInfo}
+                                            onChange={setCarMoreInfo}
+                                            modules={quillModules}
+                                            placeholder="Nhập thông tin chi tiết liên quan đến dòng xe này (sẽ hiển thị dưới phần những đặc quyền sở hữu)..."
+                                        />
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Submit and Cancel Buttons */}
                             <div className="flex justify-end gap-3 pt-6 border-t border-gray-100">
