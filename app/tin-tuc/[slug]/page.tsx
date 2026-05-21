@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { getCachedNews } from "@/utils/supabase/cached";
+import { getCachedNews, getCachedNewsArticle } from "@/utils/supabase/cached";
 import Image from "next/image";
 import Link from "next/link";
 import { toSlug, stripHtml } from "@/utils/slug";
@@ -30,8 +30,20 @@ async function getArticle(slug: string) {
                   created_at: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
               }));
 
-    const article = displayNews.find((n) => toSlug(n.title) === slug);
+    const articleInfo = displayNews.find((n) => toSlug(n.title) === slug);
     const otherArticles = displayNews.filter((n) => toSlug(n.title) !== slug).slice(0, 4);
+
+    let article = articleInfo;
+    if (articleInfo && news.some((n) => n.id === articleInfo.id)) {
+        try {
+            const fullArticle = await getCachedNewsArticle(articleInfo.id);
+            if (fullArticle) {
+                article = fullArticle;
+            }
+        } catch (err) {
+            console.error("Lỗi khi tải chi tiết tin tức:", err);
+        }
+    }
 
     return { article, otherArticles };
 }

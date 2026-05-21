@@ -19,10 +19,13 @@ export default async function BangGiaXePage() {
     }
 
     // Merge DB cars with mockHomeCars
-    const displayCars = mockHomeCars.map((mockCar) => {
-        const dbCar = cars.find((c) => c.id === mockCar.id);
-        return dbCar ? dbCar : mockCar;
+    const dbCars = cars || [];
+    const mergedCars = mockHomeCars.map((mockCar) => {
+        const dbCar = dbCars.find((c) => c.id === mockCar.id);
+        return dbCar ? { ...mockCar, ...dbCar } : mockCar;
     });
+    const customCars = dbCars.filter((dbCar) => !mockHomeCars.some((m) => m.id === dbCar.id));
+    const displayCars = [...mergedCars, ...customCars];
 
     return (
         <main className="min-h-screen bg-white py-12 md:py-16">

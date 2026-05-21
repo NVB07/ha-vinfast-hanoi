@@ -4,11 +4,45 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { Menu, User, Phone, ChevronDown } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { getCachedGeneralSettings } from "@/utils/supabase/cached";
+import { getCachedGeneralSettings, getCachedCars } from "@/utils/supabase/cached";
 
 export default async function Header() {
-    const settings = await getCachedGeneralSettings();
+    const [settings, carsData] = await Promise.all([
+        getCachedGeneralSettings(),
+        getCachedCars()
+    ]);
     const phone = settings?.phone || settings?.zalo || "1900 23 23 89";
+    const dbCars = carsData || [];
+
+    const defaultCarNames = [
+        "VF 3",
+        "VF 5",
+        "VF 6",
+        "VF 7",
+        "VF 8",
+        "VF 9",
+        "MINIO GREEN",
+        "HERIO GREEN",
+        "NERIO GREEN",
+        "LIMO GREEN",
+        "EC VAN",
+        "E BUS",
+    ];
+
+    // Find custom cars in DB that are not in default list
+    const customCarNames = dbCars
+        .filter((c: any) => !defaultCarNames.some(m => m.toLowerCase().replace(/\s+/g, "") === c.name.toLowerCase().replace(/\s+/g, "")))
+        .map((c: any) => c.name);
+
+    const allCarNames = [...defaultCarNames, ...customCarNames];
+
+    const carList = allCarNames.map(name => {
+        const dbCar = dbCars.find((c: any) => c.name.toLowerCase().replace(/\s+/g, "") === name.toLowerCase().replace(/\s+/g, ""));
+        return {
+            name: dbCar?.name || name,
+            slug: name.toLowerCase().replace(/\s+/g, "-")
+        };
+    });
 
     return (
         <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur border-b border-gray-100 shadow-sm">
@@ -40,37 +74,22 @@ export default async function Header() {
                                                 SẢN PHẨM <ChevronDown className="w-4 h-4 opacity-70 group-open:rotate-180 transition-transform" />
                                             </summary>
                                             <div className="pl-4 pt-4 flex flex-col gap-4 font-semibold text-[13px] text-gray-600 normal-case border-l-2 border-l-gray-100 ml-2 mt-2">
-                                                {[
-                                                    "VF 3",
-                                                    "VF 5",
-                                                    "VF 6",
-                                                    "VF 7",
-                                                    "VF 8",
-                                                    "VF 9",
-                                                    "MINIO GREEN",
-                                                    "HERIO GREEN",
-                                                    "NERIO GREEN",
-                                                    "LIMO GREEN",
-                                                    "EC VAN",
-                                                    "E BUS",
-                                                ].map((car) => (
+                                                {carList.map((car) => (
                                                     <SheetClose
+                                                        key={car.slug}
                                                         nativeButton={false}
-                                                        key={car}
-                                                        render={
-                                                            <Link
-                                                                href={`/san-pham/${car.toLowerCase().replace(/\s+/g, "-")}`}
-                                                                className="hover:text-[#0062BD] transition-colors"
-                                                            />
-                                                        }
+                                                        render={<Link href={`/san-pham/${car.slug}`} className="hover:text-[#0062BD] transition-colors" />}
                                                     >
-                                                        {car}
+                                                        {car.name}
                                                     </SheetClose>
                                                 ))}
                                             </div>
                                         </details>
 
-                                        <SheetClose nativeButton={false} render={<Link href="/bang-gia-xe" className="hover:text-[#0062BD] transition-colors" />}>
+                                        <SheetClose
+                                            nativeButton={false}
+                                            render={<Link href="/bang-gia-xe" className="hover:text-[#0062BD] transition-colors" />}
+                                        >
                                             BẢNG GIÁ XE
                                         </SheetClose>
 
@@ -129,18 +148,16 @@ export default async function Header() {
                             <div className="hover:text-[#0062BD] transition-colors flex items-center gap-1 whitespace-nowrap cursor-pointer h-full">
                                 SẢN PHẨM <ChevronDown className="w-3 h-3 opacity-60 group-hover:rotate-180 transition-transform" />
                             </div>
-                            <div className="absolute top-[72px] left-1/2 -translate-x-1/2 w-[800px] bg-white border border-gray-100 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 grid grid-cols-6 gap-x-2 gap-y-4 p-6 rounded-sm border-t-2 border-t-[#0088FF] pointer-events-auto">
-                                {["VF 3", "VF 5", "VF 6", "VF 7", "VF 8", "VF 9", "MINIO GREEN", "HERIO GREEN", "NERIO GREEN", "LIMO GREEN", "EC VAN", "E BUS"].map(
-                                    (car) => (
-                                        <Link
-                                            key={car}
-                                            href={`/san-pham/${car.toLowerCase().replace(/\s+/g, "-")}`}
-                                            className="hover:bg-gray-50 hover:text-[#0062BD] text-[13px] font-semibold text-gray-700 transition-colors p-2 text-center rounded whitespace-nowrap"
-                                        >
-                                            {car}
-                                        </Link>
-                                    ),
-                                )}
+                            <div className="absolute top-[72px] left-1/2 -translate-x-1/2 w-[800px] max-h-[450px] overflow-y-auto bg-white border border-gray-100 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 grid grid-cols-6 gap-x-2 gap-y-4 p-6 rounded-sm border-t-2 border-t-[#0088FF] pointer-events-auto">
+                                {carList.map((car) => (
+                                    <Link
+                                        key={car.slug}
+                                        href={`/san-pham/${car.slug}`}
+                                        className="hover:bg-gray-50 hover:text-[#0062BD] text-[13px] font-semibold text-gray-700 transition-colors p-2 text-center rounded whitespace-nowrap"
+                                    >
+                                        {car.name}
+                                    </Link>
+                                ))}
                             </div>
                         </div>
 

@@ -72,7 +72,12 @@ export const getCachedNews = unstable_cache(
                 console.error("Error fetching news from Supabase:", error);
                 return [];
             }
-            return data || [];
+            // Strip HTML and truncate description to 250 characters for lightweight list cache
+            const cleanedData = (data || []).map((n: any) => ({
+                ...n,
+                description: n.description ? n.description.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").substring(0, 250) : ""
+            }));
+            return cleanedData;
         } catch (err) {
             console.error("Failed to get news:", err);
             return [];
@@ -81,3 +86,22 @@ export const getCachedNews = unstable_cache(
     ["news"],
     { tags: ["news"], revalidate: 3600 }
 );
+
+export const getCachedNewsArticle = (id: number) => unstable_cache(
+    async () => {
+        try {
+            const { data, error } = await globalSupabase.from("news").select("*").eq("id", id).single();
+            if (error) {
+                console.error("Error fetching single news from Supabase:", error);
+                return null;
+            }
+            return data;
+        } catch (err) {
+            console.error("Failed to get single news:", err);
+            return null;
+        }
+    },
+    [`news_article_${id}`],
+    { tags: [`news_article_${id}`, "news"], revalidate: 3600 }
+)();
+

@@ -69,10 +69,13 @@ function SliderArrows() {
 
 export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
     const displaySliders = sliders.length > 0 ? sliders.map((s) => s.image_url) : mockSliders;
-    const displayCars = mockHomeCars.map((mockCar) => {
-        const dbCar = cars.find((c) => c.id === mockCar.id);
-        return dbCar ? dbCar : mockCar;
+    const dbCars = cars || [];
+    const mergedCars = mockHomeCars.map((mockCar) => {
+        const dbCar = dbCars.find((c) => c.id === mockCar.id);
+        return dbCar ? { ...mockCar, ...dbCar } : mockCar;
     });
+    const customCars = dbCars.filter((dbCar) => !mockHomeCars.some((m) => m.id === dbCar.id));
+    const displayCars = [...mergedCars, ...customCars];
     const router = useRouter();
     const [showContactDialog, setShowContactDialog] = useState(false);
     const [contactInfo, setContactInfo] = useState({ phone: "0345726001", zalo: "0345726001" });

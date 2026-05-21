@@ -26,12 +26,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const carsData = await getCachedCars();
     const cars = carsData || [];
 
+    const dbCars = cars || [];
     const mergedCars = mockHomeCars.map((mockCar) => {
-        const dbCar = cars.find((c) => c.id === mockCar.id);
-        return dbCar ? dbCar : mockCar;
+        const dbCar = dbCars.find((c) => c.id === mockCar.id);
+        return dbCar ? { ...mockCar, ...dbCar } : mockCar;
     });
+    const customCars = dbCars.filter((dbCar) => !mockHomeCars.some((m) => m.id === dbCar.id));
+    const allCars = [...mergedCars, ...customCars];
 
-    const car = mergedCars.find((c) => c.name.toLowerCase().replace(/\s+/g, "-") === slug);
+    const car = allCars.find((c) => c.name.toLowerCase().replace(/\s+/g, "-") === slug);
 
     if (!car) return { title: "Không tìm thấy sản phẩm" };
 
@@ -57,12 +60,15 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     const cars = carsData || [];
 
     // Nối dữ liệu
+    const dbCars = cars || [];
     const mergedCars = mockHomeCars.map((mockCar) => {
-        const dbCar = cars.find((c) => c.id === mockCar.id);
-        return dbCar ? dbCar : mockCar;
+        const dbCar = dbCars.find((c) => c.id === mockCar.id);
+        return dbCar ? { ...mockCar, ...dbCar } : mockCar;
     });
+    const customCars = dbCars.filter((dbCar) => !mockHomeCars.some((m) => m.id === dbCar.id));
+    const allCars = [...mergedCars, ...customCars];
 
-    const car = mergedCars.find((c) => c.name.toLowerCase().replace(/\s+/g, "-") === slug);
+    const car = allCars.find((c) => c.name.toLowerCase().replace(/\s+/g, "-") === slug);
 
     if (!car) {
         return (
@@ -72,19 +78,29 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         );
     }
 
-    // Đọc ảnh từ folder tương ứng (Bỏ khoảng trắng)
+    // Đọc ảnh slider từ database (Cloudinary) hoặc từ folder tương ứng (Bỏ khoảng trắng)
     let sliderImages: string[] = [];
-    const carFolderName = car.name.replace(/\s+/g, "");
-    console.log("carFolderName", carFolderName);
-    const dirPath = path.join(process.cwd(), "public", "images", "cars", carFolderName);
-
-    try {
-        if (fs.existsSync(dirPath)) {
-            const files = fs.readdirSync(dirPath);
-            sliderImages = files.filter((file) => /\.(png|jpe?g|webp|gif)$/i.test(file)).map((file) => `/images/cars/${carFolderName}/${file}`);
+    if (car.slider_images) {
+        try {
+            if (car.slider_images.startsWith("[") && car.slider_images.endsWith("]")) {
+                sliderImages = JSON.parse(car.slider_images);
+            } else {
+                sliderImages = car.slider_images.split(",").map((s: string) => s.trim()).filter(Boolean);
+            }
+        } catch {
+            sliderImages = car.slider_images.split(",").map((s: string) => s.trim()).filter(Boolean);
         }
-    } catch (e) {
-        console.error(e);
+    } else {
+        const carFolderName = car.name.replace(/\s+/g, "");
+        const dirPath = path.join(process.cwd(), "public", "images", "cars", carFolderName);
+        try {
+            if (fs.existsSync(dirPath)) {
+                const files = fs.readdirSync(dirPath);
+                sliderImages = files.filter((file) => /\.(png|jpe?g|webp|gif)$/i.test(file)).map((file) => `/images/cars/${carFolderName}/${file}`);
+            }
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     // Mặc định nạp ảnh đại diện nếu thư mục con trống

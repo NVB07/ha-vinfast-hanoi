@@ -5,7 +5,15 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export default function GlobalPromo({ isShow = false, title = "Yêu cầu báo giá" }: { isShow?: boolean; title?: string }) {
+export default function GlobalPromo({ 
+    isShow = false, 
+    title = "Yêu cầu báo giá",
+    cars = [] 
+}: { 
+    isShow?: boolean; 
+    title?: string;
+    cars?: string[];
+}) {
     const [showPromoPopup, setShowPromoPopup] = useState(isShow);
 
     const [promoName, setPromoName] = useState("");
@@ -13,6 +21,38 @@ export default function GlobalPromo({ isShow = false, title = "Yêu cầu báo g
     const [promoCar, setPromoCar] = useState("");
     const [promoLoading, setPromoLoading] = useState(false);
     const [modalTitle, setModalTitle] = useState(title);
+
+    const [carOptions, setCarOptions] = useState<string[]>(
+        cars && cars.length > 0 
+            ? cars 
+            : ["VinFast VF 3", "VinFast VF 5 Plus", "VinFast VF e34", "VinFast VF 6", "VinFast VF 7", "VinFast VF 8", "VinFast VF 9"]
+    );
+
+    // Sync options when prop updates
+    useEffect(() => {
+        if (cars && cars.length > 0) {
+            setCarOptions(cars);
+        }
+    }, [cars]);
+
+    // Client-side dynamic loading fallback if prop is empty
+    useEffect(() => {
+        if (!cars || cars.length === 0) {
+            const fetchCars = async () => {
+                try {
+                    const { createClient } = await import("@/utils/supabase/client");
+                    const supabase = createClient();
+                    const { data } = await supabase.from("cars").select("name").order("id", { ascending: true });
+                    if (data && data.length > 0) {
+                        setCarOptions(data.map((c: any) => c.name));
+                    }
+                } catch (err) {
+                    console.error("Failed to fetch cars in GlobalPromo:", err);
+                }
+            };
+            fetchCars();
+        }
+    }, [cars]);
 
     const phone = "0345726001";
     // Sync with isShow prop changes
@@ -46,8 +86,6 @@ export default function GlobalPromo({ isShow = false, title = "Yêu cầu báo g
                 setModalTitle(customEvent.detail.title);
             }
 
-            const carOptions = ["VinFast VF 3", "VinFast VF 5 Plus", "VinFast VF e34", "VinFast VF 6", "VinFast VF 7", "VinFast VF 8", "VinFast VF 9"];
-
             if (customEvent.detail?.car) {
                 const inputCar = customEvent.detail.car.toLowerCase().trim();
                 // Find matching option
@@ -65,7 +103,7 @@ export default function GlobalPromo({ isShow = false, title = "Yêu cầu báo g
 
         window.addEventListener("open-global-promo", handleOpen);
         return () => window.removeEventListener("open-global-promo", handleOpen);
-    }, []);
+    }, [carOptions]);
 
     const handleClosePromoPopup = () => {
         setShowPromoPopup(false);
@@ -110,7 +148,7 @@ export default function GlobalPromo({ isShow = false, title = "Yêu cầu báo g
         }
     };
 
-    const carOptions = ["VinFast VF 3", "VinFast VF 5 Plus", "VinFast VF e34", "VinFast VF 6", "VinFast VF 7", "VinFast VF 8", "VinFast VF 9"];
+
 
     return (
         <>

@@ -1,10 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getCachedGeneralSettings } from "@/utils/supabase/cached";
+import { getCachedGeneralSettings, getCachedCars } from "@/utils/supabase/cached";
 import GlobalPromo from "./GlobalPromo";
-
 export default async function Footer() {
-    const settings = await getCachedGeneralSettings();
+    const [settings, carsData] = await Promise.all([
+        getCachedGeneralSettings(),
+        getCachedCars()
+    ]);
+
+    const carNames = (carsData || []).map((c: any) => c.name);
 
     const phone = settings?.phone || settings?.zalo;
     const email = settings?.email || " ";
@@ -222,7 +226,7 @@ export default async function Footer() {
             </div>
 
             {/* Global Promotion & Inquiry Widget */}
-            <GlobalPromo />
+            <GlobalPromo cars={carNames} />
         </>
     );
 }
