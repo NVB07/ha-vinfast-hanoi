@@ -45,6 +45,8 @@ export default function AdminPage() {
     // CAR CRUD & DIALOG STATES
     const [isCarDialogOpen, setIsCarDialogOpen] = useState(false);
     const [editingCar, setEditingCar] = useState<any | null>(null);
+    const [dbHasPinnedColumn, setDbHasPinnedColumn] = useState(true);
+    const [carIsPinned, setCarIsPinned] = useState(false);
     const [carForm, setCarForm] = useState({
         name: "",
         type: "",
@@ -77,7 +79,13 @@ export default function AdminPage() {
         if (sData) setSliders(sData);
 
         const { data: cData } = await supabase.from("cars").select("*").order("id", { ascending: true });
-        if (cData) setCars(cData);
+        if (cData) {
+            setCars(cData);
+            if (cData.length > 0) {
+                const hasPinnedCol = "is_pinned" in cData[0];
+                setDbHasPinnedColumn(hasPinnedCol);
+            }
+        }
 
         const { data: nData } = await supabase.from("news").select("*").order("created_at", { ascending: false });
         if (nData) setNews(nData);
@@ -196,6 +204,7 @@ export default function AdminPage() {
     // CAR ACTION HANDLERS
     const handleAddCarClick = () => {
         setEditingCar(null);
+        setCarIsPinned(false);
         setCarForm({
             name: "",
             type: "",
@@ -221,6 +230,7 @@ export default function AdminPage() {
 
     const handleEditCarClick = (car: any) => {
         setEditingCar(car);
+        setCarIsPinned(!!car.is_pinned);
         setCarForm({
             name: car.name || "",
             type: car.type || "",
@@ -322,6 +332,10 @@ export default function AdminPage() {
                 carPayload.id = editingCar.id;
             }
 
+            if (dbHasPinnedColumn) {
+                carPayload.is_pinned = carIsPinned;
+            }
+
             const { error } = await supabase.from("cars").upsert([carPayload]);
             if (error) throw error;
 
@@ -330,7 +344,11 @@ export default function AdminPage() {
             setIsCarDialogOpen(false);
             fetchData();
         } catch (error: any) {
-            alert("Lỗi khi lưu thông tin xe: " + error.message);
+            if (error.message && (error.message.includes("is_pinned") || error.code === "42703")) {
+                alert("Lỗi: Cột 'is_pinned' chưa tồn tại trong cơ sở dữ liệu. Vui lòng chạy câu lệnh SQL nâng cấp ở banner thông báo màu vàng!");
+            } else {
+                alert("Lỗi khi lưu thông tin xe: " + error.message);
+            }
         }
         setLoading(false);
     };
@@ -403,6 +421,33 @@ export default function AdminPage() {
 
                 {/* TAB CARS (CRUD Table) */}
                 <TabsContent value="cars" className="space-y-6">
+                    {!dbHasPinnedColumn && (
+                        <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm animate-in fade-in slide-in-from-top-4 duration-300">
+                            <div className="flex items-start gap-3">
+                                <span className="text-2xl mt-0.5">⚠️</span>
+                                <div>
+                                    <h4 className="text-sm font-bold text-amber-800">Cơ sở dữ liệu của bạn thiếu cột "is_pinned"</h4>
+                                    <p className="text-xs text-amber-700 mt-1 max-w-2xl leading-normal">
+                                        Để ghim xe lên Trang chủ, vui lòng truy cập **Supabase Dashboard** {"->"} **SQL Editor** và chạy câu lệnh bên phải. Hệ thống sẽ tự động kích hoạt tính năng ghim xe ngay lập tức!
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex flex-col gap-2 min-w-[280px]">
+                                <div className="bg-amber-950/5 text-amber-900 border border-amber-950/10 font-mono text-[10px] p-2 rounded select-all whitespace-nowrap overflow-x-auto">
+                                    ALTER TABLE cars ADD COLUMN is_pinned BOOLEAN DEFAULT FALSE;
+                                </div>
+                                <button 
+                                    onClick={() => {
+                                        navigator.clipboard.writeText("ALTER TABLE cars ADD COLUMN is_pinned BOOLEAN DEFAULT FALSE;");
+                                        alert("Đã sao chép câu lệnh SQL!");
+                                    }}
+                                    className="bg-amber-700 hover:bg-amber-800 text-white font-bold text-[10px] uppercase py-1.5 px-3 rounded shadow transition-all self-end"
+                                >
+                                    Sao chép câu lệnh SQL
+                                </button>
+                            </div>
+                        </div>
+                    )}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
                         <div>
                             <h2 className="text-xl font-bold text-gray-900">Quản Lý Danh Sách Xe VinFast</h2>
@@ -451,10 +496,19 @@ export default function AdminPage() {
                                                     </div>
                                                 </td>
                                                 <td className="py-4 px-6 font-bold text-gray-900 uppercase">
-                                                    {car.name}
-                                                    {isCustom && (
-                                                        <span className="ml-2 text-[9px] bg-green-50 text-green-600 font-extrabold px-1.5 py-0.5 rounded border border-green-200 uppercase tracking-wider">Mới</span>
-                                                    )}
+                                                    <div className="flex flex-col gap-1">
+                                                        <div className="flex items-center gap-1.5">
+                                                            <span>{car.name}</span>
+                                                            {isCustom && (
+                                                                <span className="text-[9px] bg-green-50 text-green-600 font-extrabold px-1.5 py-0.5 rounded border border-green-200 uppercase tracking-wider">Mới</span>
+                                                            )}
+                                                        </div>
+                                                        {dbHasPinnedColumn && car.is_pinned && (
+                                                            <span className="inline-flex items-center gap-1 text-[9px] bg-blue-50 text-blue-600 border border-blue-200 font-bold px-1.5 py-0.5 rounded w-fit uppercase">
+                                                                📌 Ghim trang chủ
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </td>
                                                 <td className="py-4 px-6 text-gray-600 font-medium">
                                                     {car.type || "—"}
@@ -667,35 +721,51 @@ export default function AdminPage() {
                             <div className="space-y-4">
                                 <h4 className="font-bold text-xs text-[#0062BD] uppercase tracking-wider border-b pb-1.5">1. Thông Tin Cơ Bản & Hình Ảnh</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div>
-                                        <label className="block text-xs font-semibold text-gray-600 mb-1.5">Tên Dòng Xe *</label>
-                                        <Input
-                                            value={carForm.name}
-                                            onChange={(e) => setCarForm({ ...carForm, name: e.target.value })}
-                                            placeholder="Ví dụ: VF 3, VF 5..."
-                                            className="h-9 text-xs px-3"
-                                            required
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-semibold text-gray-600 mb-1.5">Phân Khúc / Loại Xe</label>
-                                        <Input
-                                            value={carForm.type}
-                                            onChange={(e) => setCarForm({ ...carForm, type: e.target.value })}
-                                            placeholder="Ví dụ: Mini SUV, B SUV..."
-                                            className="h-9 text-xs px-3"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-semibold text-gray-600 mb-1.5">Số Chỗ Ngồi</label>
-                                        <Input
-                                            value={carForm.slot}
-                                            onChange={(e) => setCarForm({ ...carForm, slot: e.target.value })}
-                                            placeholder="Ví dụ: 4 chỗ, 5 chỗ..."
-                                            className="h-9 text-xs px-3"
-                                        />
-                                    </div>
-                                </div>
+                                                    <div>
+                                                        <label className="block text-xs font-semibold text-gray-600 mb-1.5">Tên Dòng Xe *</label>
+                                                        <Input
+                                                            value={carForm.name}
+                                                            onChange={(e) => setCarForm({ ...carForm, name: e.target.value })}
+                                                            placeholder="Ví dụ: VF 3, VF 5..."
+                                                            className="h-9 text-xs px-3"
+                                                            required
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-xs font-semibold text-gray-600 mb-1.5">Phân Khúc / Loại Xe</label>
+                                                        <Input
+                                                            value={carForm.type}
+                                                            onChange={(e) => setCarForm({ ...carForm, type: e.target.value })}
+                                                            placeholder="Ví dụ: Mini SUV, B SUV..."
+                                                            className="h-9 text-xs px-3"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-xs font-semibold text-gray-600 mb-1.5">Số Chỗ Ngồi</label>
+                                                        <Input
+                                                            value={carForm.slot}
+                                                            onChange={(e) => setCarForm({ ...carForm, slot: e.target.value })}
+                                                            placeholder="Ví dụ: 4 chỗ, 5 chỗ..."
+                                                            className="h-9 text-xs px-3"
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                {dbHasPinnedColumn && (
+                                                    <div className="flex items-center gap-2.5 bg-blue-50/50 border border-blue-100/50 p-3.5 rounded-xl mt-1.5 shadow-sm">
+                                                        <input
+                                                            type="checkbox"
+                                                            id="car-is-pinned"
+                                                            checked={carIsPinned}
+                                                            onChange={(e) => setCarIsPinned(e.target.checked)}
+                                                            className="h-4 w-4 text-[#0088FF] focus:ring-[#0088FF] rounded border-gray-300 cursor-pointer"
+                                                        />
+                                                        <div className="flex flex-col cursor-pointer" onClick={() => setCarIsPinned(!carIsPinned)}>
+                                                            <span className="text-xs font-bold text-gray-800">📌 Ghim lên trang chủ (Khám phá các dòng xe VinFast)</span>
+                                                            <span className="text-[10px] text-gray-500 mt-0.5">Xe được ghim sẽ hiển thị tại các thẻ Tabs chọn trên Trang chủ</span>
+                                                        </div>
+                                                    </div>
+                                                )}
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                                     {/* FEATURED IMAGE */}

@@ -75,7 +75,12 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
         return dbCar ? { ...mockCar, ...dbCar } : mockCar;
     });
     const customCars = dbCars.filter((dbCar) => !mockHomeCars.some((m) => m.id === dbCar.id));
-    const displayCars = [...mergedCars, ...customCars];
+    
+    // Support dynamic is_pinned pinning with Graceful Fallback
+    const initialCars = [...mergedCars, ...customCars];
+    const pinnedCars = initialCars.filter((car) => car.is_pinned === true);
+    const displayCars = pinnedCars.length > 0 ? pinnedCars : initialCars;
+
     const router = useRouter();
     const [showContactDialog, setShowContactDialog] = useState(false);
     const [contactInfo, setContactInfo] = useState({ phone: "0345726001", zalo: "0345726001" });
@@ -230,17 +235,19 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                                     ))}
                                 </div>
                                 {/* Row 2: Car Models */}
-                                <div className="flex flex-wrap justify-center gap-1.5 md:gap-3 w-full">
-                                    {displayCars.slice(8).map((model) => (
-                                        <TabsTrigger
-                                            key={model.id}
-                                            value={model.name.toLowerCase().replace(/ /g, "")}
-                                            className="bg-white border border-gray-400 text-gray-700 rounded-md px-2.5 py-1.5 md:px-4 flex-none !h-auto text-[10px] md:text-[11px] font-bold uppercase transition-all hover:bg-gray-50 data-active:border-[#0088FF] data-active:bg-[#0088FF] data-active:text-white cursor-pointer shadow-sm"
-                                        >
-                                            {model.name}
-                                        </TabsTrigger>
-                                    ))}
-                                </div>
+                                {displayCars.length > 8 && (
+                                    <div className="flex flex-wrap justify-center gap-1.5 md:gap-3 w-full">
+                                        {displayCars.slice(8).map((model) => (
+                                            <TabsTrigger
+                                                key={model.id}
+                                                value={model.name.toLowerCase().replace(/ /g, "")}
+                                                className="bg-white border border-gray-400 text-gray-700 rounded-md px-2.5 py-1.5 md:px-4 flex-none !h-auto text-[10px] md:text-[11px] font-bold uppercase transition-all hover:bg-gray-50 data-active:border-[#0088FF] data-active:bg-[#0088FF] data-active:text-white cursor-pointer shadow-sm"
+                                            >
+                                                {model.name}
+                                            </TabsTrigger>
+                                        ))}
+                                    </div>
+                                )}
                             </TabsList>
                         </div>
 
