@@ -1,10 +1,19 @@
 import { getCachedCars } from "@/utils/supabase/cached";
 import Image from "next/image";
 import { mockHomeCars } from "@/utils/mockData";
+import { SITE_URL } from "@/lib/config";
 
 export const metadata = {
-    title: "Bảng Giá Xe VinFast | VinFast",
-    description: "Cập nhật bảng giá xe VinFast mới nhất. Liên hệ hotline để nhận ưu đãi.",
+    title: "Bảng Giá Xe Điện VinFast 2025 Mới Nhất | VinFast Hà Nội",
+    description: "Cập nhật bảng giá xe VinFast 2025: VF 3, VF 5, VF 6, VF 7, VF 8, VF 9 mới nhất. Giá niêm yết và giá ưu đãi chính thức từ đại lý VinFast chính hãng tại Hà Nội. Liên hệ ngay để nhận báo giá tốt nhất!",
+    keywords: ["bảng giá xe VinFast", "giá xe VinFast 2025", "giá VF 3", "giá VF 5", "giá VF 6", "giá VF 7", "giá VF 8", "giá VF 9", "giá lăn bánh VinFast", "giá ưu đãi VinFast"],
+    alternates: { canonical: `${SITE_URL}/bang-gia-xe` },
+    openGraph: {
+        title: "Bảng Giá Xe Điện VinFast 2025 | VinFast Hà Nội",
+        description: "Xem ngay bảng giá xe điện VinFast 2025 đầy đủ nhất. Giá niêm yết và ưu đãi chính thức từ đại lý VinFast chính hãng tại Hà Nội.",
+        url: `${SITE_URL}/bang-gia-xe`,
+        type: "website",
+    },
 };
 
 export default async function BangGiaXePage() {

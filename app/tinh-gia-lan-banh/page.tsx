@@ -1,9 +1,18 @@
 import React from "react";
 import { getCachedGeneralSettings } from "@/utils/supabase/cached";
+import { SITE_URL } from "@/lib/config";
 
 export const metadata = {
-    title: "Tính Giá Lăn Bánh Xe VinFast | VinFast",
-    description: "Công cụ tính giá lăn bánh xe VinFast và các câu hỏi thường gặp.",
+    title: "Tính Giá Lăn Bánh Xe VinFast 2025 | Phí Đăng Ký & Thuế - VinFast Hà Nội",
+    description: "Công cụ tính giá lăn bánh xe VinFast 2025 bao gồm thuế trước bạ, phí đăng ký, bảo hiểm. Giải đáp các câu hỏi thường gặp khi mua xe điện VinFast tại Hà Nội.",
+    keywords: ["tính giá lăn bánh VinFast", "giá lăn bánh VinFast 2025", "thuế trước bạ VinFast", "phí đăng ký xe VinFast", "giá lăn bánh xe điện Hà Nội"],
+    alternates: { canonical: `${SITE_URL}/tinh-gia-lan-banh` },
+    openGraph: {
+        title: "Tính Giá Lăn Bánh Xe VinFast 2025 | VinFast Hà Nội",
+        description: "Tính chính xác giá lăn bánh xe điện VinFast gồm thuế, phí đăng ký và bảo hiểm.",
+        url: `${SITE_URL}/tinh-gia-lan-banh`,
+        type: "website",
+    },
 };
 
 export default async function TinhGiaLanBanhPage() {

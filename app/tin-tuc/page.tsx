@@ -3,10 +3,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { toSlug, stripHtml } from "@/utils/slug";
 import { Button } from "@/components/ui/button";
+import { SITE_URL } from "@/lib/config";
 
 export const metadata = {
-    title: "Tin Tức & Hoạt Động | VinFast Hà Nội",
-    description: "Cập nhật những tin tức mới nhất về các dòng xe điện VinFast, chương trình khuyến mãi, ưu đãi lăn bánh và sự kiện nổi bật của VinFast tại Hà Nội.",
+    title: "Tin Tức Xe Điện VinFast | Khuyến Mãi & Sự Kiện - VinFast Hà Nội",
+    description: "Cập nhật tin tức mới nhất về xe điện VinFast: chương trình khuyến mãi, ưu đãi lăn bánh, sự kiện ra mắt và hoạt động nổi bật của VinFast tại Hà Nội.",
+    keywords: ["tin tức VinFast", "khuyến mãi VinFast", "sự kiện VinFast", "ưu đãi VinFast Hà Nội", "tin tức xe điện", "VinFast 2025"],
+    alternates: { canonical: `${SITE_URL}/tin-tuc` },
+    openGraph: {
+        title: "Tin Tức & Hoạt Động VinFast Hà Nội",
+        description: "Cập nhật tin tức mới nhất về các dòng xe điện VinFast, chương trình khuyến mãi và sự kiện nổi bật tại Hà Nội.",
+        url: `${SITE_URL}/tin-tuc`,
+        type: "website",
+    },
 };
 
 export default async function NewsPage() {

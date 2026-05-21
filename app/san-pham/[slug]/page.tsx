@@ -3,6 +3,7 @@ import { getCachedCars } from "@/utils/supabase/cached";
 import { mockHomeCars } from "@/utils/mockData";
 import fs from "fs";
 import path from "path";
+import { SITE_URL } from "@/lib/config";
 import ProductDetailClient from "./ProductDetailClient";
 import VF3Details from "./VF3Details";
 import VF5Details from "./VF5Details";
@@ -58,10 +59,21 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     return {
         title,
         description,
+        alternates: {
+            canonical: `${SITE_URL}/san-pham/${slug}`,
+        },
         openGraph: {
             title,
             description,
-            images: [car.image],
+            url: `${SITE_URL}/san-pham/${slug}`,
+            images: car.image ? [{ url: car.image, alt: `VinFast ${car.name}` }] : [],
+            type: "website",
+        },
+        twitter: {
+            card: "summary_large_image",
+            title,
+            description,
+            images: car.image ? [car.image] : [],
         },
     };
 }

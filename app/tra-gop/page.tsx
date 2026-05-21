@@ -1,10 +1,19 @@
 import React from "react";
 import Image from "next/image";
 import { getCachedGeneralSettings } from "@/utils/supabase/cached";
+import { SITE_URL } from "@/lib/config";
 
 export const metadata = {
-    title: "Mua Xe VinFast Trả Góp | VinFast",
-    description: "Thủ tục và quy trình mua xe VinFast trả góp chi tiết.",
+    title: "Mua Xe VinFast Trả Góp | Lãi Suất 0% - VinFast Hà Nội",
+    description: "Hướng dẫn mua xe VinFast trả góp chi tiết tại Hà Nội. Lãi suất 0%, thủ tục đơn giản, giải ngân nhanh chóng. Tư vấn miễn phí và tính mức trả góp ngay hôm nay!",
+    keywords: ["mua xe VinFast trả góp", "VinFast trả góp", "lãi suất VinFast", "vay mua xe VinFast", "trả góp xe điện Hà Nội"],
+    alternates: { canonical: `${SITE_URL}/tra-gop` },
+    openGraph: {
+        title: "Mua Xe VinFast Trả Góp Lãi Suất 0% | VinFast Hà Nội",
+        description: "Tìm hiểu ngay các gói trả góp ưu đãi khi mua xe điện VinFast tại Hà Nội. Thủ tục đơn giản, lãi suất thấp nhất thị trường.",
+        url: `${SITE_URL}/tra-gop`,
+        type: "website",
+    },
 };
 
 export default async function TraGopPage() {
