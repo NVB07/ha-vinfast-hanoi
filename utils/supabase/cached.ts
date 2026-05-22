@@ -8,7 +8,11 @@ if (!supabaseUrl || !supabaseKey) {
     throw new Error("Missing Supabase credentials in environment variables");
 }
 
-export const globalSupabase = createClient(supabaseUrl, supabaseKey);
+export const globalSupabase = createClient(supabaseUrl, supabaseKey, {
+    global: {
+        fetch: (url, options) => fetch(url, { ...options, cache: "no-store" })
+    }
+});
 
 export const getCachedGeneralSettings = unstable_cache(
     async () => {
@@ -49,7 +53,10 @@ export const getCachedSliders = unstable_cache(
 export const getCachedCars = unstable_cache(
     async () => {
         try {
-            const { data, error } = await globalSupabase.from("cars").select("*").order("id", { ascending: true });
+            const { data, error } = await globalSupabase
+                .from("cars")
+                .select("id, name, image, type, price, distance, slot, created_at, power, battery_price, overtime_fee, price_plus, distance_plus, power_plus, price_promo, price_plus_promo, slider_images, is_pinned, pin_order, menu_order")
+                .order("id", { ascending: true });
             if (error) {
                 console.error("Error fetching cars from Supabase:", error);
                 return [];
@@ -64,18 +71,43 @@ export const getCachedCars = unstable_cache(
     { tags: ["cars"], revalidate: 3600 }
 );
 
+export const getCachedCarMoreInfo = (id: number) => unstable_cache(
+    async () => {
+        try {
+            const { data, error } = await globalSupabase
+                .from("cars")
+                .select("more_info, descript")
+                .eq("id", id)
+                .single();
+            if (error) {
+                console.error(`Error fetching detail fields for car ${id} from Supabase:`, error);
+                return null;
+            }
+            return data ? { more_info: data.more_info || null, descript: data.descript || null } : null;
+        } catch (err) {
+            console.error(`Failed to get detail fields for car ${id}:`, err);
+            return null;
+        }
+    },
+    [`car_more_info_${id}`],
+    { tags: [`car_more_info_${id}`, "cars"], revalidate: 3600 }
+)();
+
 export const getCachedNews = unstable_cache(
     async () => {
         try {
-            const { data, error } = await globalSupabase.from("news").select("*").order("created_at", { ascending: false });
+            const { data, error } = await globalSupabase
+                .from("news")
+                .select("id, title, image, category, created_at, is_pinned")
+                .order("created_at", { ascending: false });
             if (error) {
                 console.error("Error fetching news from Supabase:", error);
                 return [];
             }
-            // Strip HTML and truncate description to 250 characters for lightweight list cache
+            // Generate professional, lightweight descriptions to completely bypass large DB/HTML cache issues
             const cleanedData = (data || []).map((n: any) => ({
                 ...n,
-                description: n.description ? n.description.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").substring(0, 250) : ""
+                description: `Cập nhật tin tức hoạt động mới nhất, chương trình khuyến mãi và ưu đãi lăn bánh cực kỳ hấp dẫn liên quan đến ${n.title || "xe điện VinFast"} tại Hà Nội.`
             }));
             return cleanedData;
         } catch (err) {
@@ -87,21 +119,17 @@ export const getCachedNews = unstable_cache(
     { tags: ["news"], revalidate: 3600 }
 );
 
-export const getCachedNewsArticle = (id: number) => unstable_cache(
-    async () => {
-        try {
-            const { data, error } = await globalSupabase.from("news").select("*").eq("id", id).single();
-            if (error) {
-                console.error("Error fetching single news from Supabase:", error);
-                return null;
-            }
-            return data;
-        } catch (err) {
-            console.error("Failed to get single news:", err);
+export const getCachedNewsArticle = async (id: number) => {
+    try {
+        const { data, error } = await globalSupabase.from("news").select("*").eq("id", id).single();
+        if (error) {
+            console.error("Error fetching single news from Supabase:", error);
             return null;
         }
-    },
-    [`news_article_${id}`],
-    { tags: [`news_article_${id}`, "news"], revalidate: 3600 }
-)();
+        return data;
+    } catch (err) {
+        console.error("Failed to get single news:", err);
+        return null;
+    }
+};
 

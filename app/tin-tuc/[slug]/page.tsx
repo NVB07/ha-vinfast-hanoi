@@ -139,7 +139,7 @@ export default async function NewsDetailPage({ params }: NewsDetailParams) {
                     <div className="text-sm leading-relaxed text-gray-600">
                         {article.description && article.description.includes("<") ? (
                             <div
-                                className="[&_h1]:text-2xl [&_h1]:font-black [&_h1]:text-gray-800 [&_h1]:mt-6 [&_h1]:mb-3 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-gray-800 [&_h2]:mt-5 [&_h2]:mb-3 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:text-gray-800 [&_h3]:mt-4 [&_h3]:mb-2 [&_p]:mb-4 [&_p]:leading-relaxed [&_li]:mb-2 [&_ul]:pl-5 [&_ul]:list-disc [&_ol]:pl-5 [&_ol]:list-decimal [&_strong]:font-bold [&_strong]:text-gray-800 ql-editor"
+                                className="break-words overflow-x-auto w-full max-w-full [&_p]:!whitespace-pre-wrap [&_p]:!break-words [&_span]:!whitespace-pre-wrap [&_span]:!break-words [&_div]:!whitespace-pre-wrap [&_div]:!break-words [&_h1]:text-2xl [&_h1]:font-black [&_h1]:text-gray-800 [&_h1]:mt-6 [&_h1]:mb-3 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-gray-800 [&_h2]:mt-5 [&_h2]:mb-3 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:text-gray-800 [&_h3]:mt-4 [&_h3]:mb-2 [&_p]:mb-4 [&_p]:leading-relaxed [&_li]:mb-2 [&_ul]:pl-5 [&_ul]:list-disc [&_ol]:pl-5 [&_ol]:list-decimal [&_strong]:font-bold [&_strong]:text-gray-800 ql-editor"
                                 dangerouslySetInnerHTML={{ __html: article.description.replace(/&nbsp;/g, " ") }}
                             />
                         ) : (

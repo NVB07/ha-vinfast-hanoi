@@ -5,6 +5,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/s
 import { Menu, User, Phone, ChevronDown } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { getCachedGeneralSettings, getCachedCars } from "@/utils/supabase/cached";
+import { mockHomeCars } from "@/utils/mockData";
 
 export default async function Header() {
     const [settings, carsData] = await Promise.all([
@@ -14,35 +15,32 @@ export default async function Header() {
     const phone = settings?.phone || settings?.zalo || "1900 23 23 89";
     const dbCars = carsData || [];
 
-    const defaultCarNames = [
-        "VF 3",
-        "VF 5",
-        "VF 6",
-        "VF 7",
-        "VF 8",
-        "VF 9",
-        "MINIO GREEN",
-        "HERIO GREEN",
-        "NERIO GREEN",
-        "LIMO GREEN",
-        "EC VAN",
-        "E BUS",
-    ];
-
-    // Find custom cars in DB that are not in default list
-    const customCarNames = dbCars
-        .filter((c: any) => !defaultCarNames.some(m => m.toLowerCase().replace(/\s+/g, "") === c.name.toLowerCase().replace(/\s+/g, "")))
-        .map((c: any) => c.name);
-
-    const allCarNames = [...defaultCarNames, ...customCarNames];
-
-    const carList = allCarNames.map(name => {
-        const dbCar = dbCars.find((c: any) => c.name.toLowerCase().replace(/\s+/g, "") === name.toLowerCase().replace(/\s+/g, ""));
+    // Merge DB cars with mockHomeCars and custom cars
+    const mergedCars = mockHomeCars.map((mockCar) => {
+        const dbCar = dbCars.find((c: any) => c.id === mockCar.id);
         return {
-            name: dbCar?.name || name,
-            slug: name.toLowerCase().replace(/\s+/g, "-")
+            ...mockCar,
+            ...(dbCar || {}),
+            menu_order: dbCar?.menu_order ?? 0
         };
     });
+    const customCars = dbCars.filter((dbCar: any) => !mockHomeCars.some((m) => m.id === dbCar.id));
+    const displayCars = [...mergedCars, ...customCars];
+
+    // Sort all cars dynamically based on menu_order then id
+    const sortedCars = [...displayCars].sort((a, b) => {
+        const orderA = a.menu_order ?? 0;
+        const orderB = b.menu_order ?? 0;
+        if (orderA !== orderB) {
+            return orderA - orderB;
+        }
+        return a.id - b.id;
+    });
+
+    const carList = sortedCars.map(car => ({
+        name: car.name,
+        slug: car.name.toLowerCase().replace(/\s+/g, "-")
+    }));
 
     return (
         <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur border-b border-gray-100 shadow-sm">

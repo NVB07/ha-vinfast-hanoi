@@ -78,7 +78,16 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
     
     // Support dynamic is_pinned pinning with Graceful Fallback
     const initialCars = [...mergedCars, ...customCars];
-    const pinnedCars = initialCars.filter((car) => car.is_pinned === true);
+    const pinnedCars = initialCars
+        .filter((car) => car.is_pinned === true)
+        .sort((a, b) => {
+            const orderA = a.pin_order ?? 0;
+            const orderB = b.pin_order ?? 0;
+            if (orderA !== orderB) {
+                return orderA - orderB;
+            }
+            return a.id - b.id;
+        });
     const displayCars = pinnedCars.length > 0 ? pinnedCars : initialCars;
 
     const router = useRouter();
@@ -221,19 +230,24 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
             {/* Model Selector Section */}
             <section className="py-20 md:py-24 bg-white relative overflow-hidden">
                 <div className="container mx-auto px-4 max-w-[1400px] flex flex-col items-center">
-                    <h2 className="text-sm md:text-base font-bold text-gray-600 mb-8 uppercase tracking-widest text-center">KHÁM PHÁ CÁC DÒNG XE VINFAST</h2>
+                    <h2 className="text-2xl md:text-4xl font-extrabold text-gray-900 mb-3 uppercase tracking-wider text-center">
+                        KHÁM PHÁ CÁC DÒNG XE VINFAST
+                    </h2>
+                    <p className="text-xs md:text-sm text-gray-500 font-medium tracking-normal mb-8 text-center max-w-lg">
+                        Lựa chọn dòng xe ô tô điện thông minh thế hệ mới phù hợp với phong cách và nhu cầu của bạn
+                    </p>
 
                     <Tabs defaultValue={displayCars.length > 0 ? displayCars[0].name.toLowerCase().replace(/ /g, "") : "vf3"} className="w-full">
-                        <div className="flex flex-col items-center mb-6">
+                        <div className="flex flex-col items-center mb-8">
                             {/* Unified TabsList for proper Context Management in Base-UI */}
-                            <TabsList className="bg-transparent !h-auto min-h-fit p-0 flex flex-col items-center gap-2 md:gap-3 mb-6 w-full">
+                            <TabsList className="bg-transparent !h-auto min-h-fit p-0 flex flex-col items-center gap-2.5 md:gap-4 mb-6 w-full">
                                 {/* Row 1: Car Models */}
-                                <div className="flex flex-wrap justify-center gap-1.5 md:gap-3 w-full">
+                                <div className="flex flex-wrap justify-center gap-2 md:gap-3.5 w-full">
                                     {displayCars.slice(0, 8).map((model) => (
                                         <TabsTrigger
                                             key={model.id}
                                             value={model.name.toLowerCase().replace(/ /g, "")}
-                                            className="bg-white border border-gray-400 text-gray-700 rounded-md px-2.5 py-1.5 md:px-4 flex-none !h-auto text-[10px] md:text-[11px] font-bold uppercase transition-all hover:bg-gray-50 data-active:border-[#0088FF] data-active:bg-[#0088FF] data-active:text-white cursor-pointer shadow-sm"
+                                            className="bg-white border border-gray-300 text-gray-700 rounded-full px-4 py-2 md:px-6 md:py-2.5 flex-none !h-auto text-xs md:text-sm font-bold uppercase transition-all hover:bg-blue-50/30 hover:border-[#0088FF]/40 data-active:border-[#0088FF] data-active:bg-[#0088FF] data-active:text-white cursor-pointer shadow-sm hover:shadow active:scale-95 duration-200"
                                         >
                                             {model.name}
                                         </TabsTrigger>
@@ -241,12 +255,12 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                                 </div>
                                 {/* Row 2: Car Models */}
                                 {displayCars.length > 8 && (
-                                    <div className="flex flex-wrap justify-center gap-1.5 md:gap-3 w-full">
+                                    <div className="flex flex-wrap justify-center gap-2 md:gap-3.5 w-full">
                                         {displayCars.slice(8).map((model) => (
                                             <TabsTrigger
                                                 key={model.id}
                                                 value={model.name.toLowerCase().replace(/ /g, "")}
-                                                className="bg-white border border-gray-400 text-gray-700 rounded-md px-2.5 py-1.5 md:px-4 flex-none !h-auto text-[10px] md:text-[11px] font-bold uppercase transition-all hover:bg-gray-50 data-active:border-[#0088FF] data-active:bg-[#0088FF] data-active:text-white cursor-pointer shadow-sm"
+                                                className="bg-white border border-gray-300 text-gray-700 rounded-full px-4 py-2 md:px-6 md:py-2.5 flex-none !h-auto text-xs md:text-sm font-bold uppercase transition-all hover:bg-blue-50/30 hover:border-[#0088FF]/40 data-active:border-[#0088FF] data-active:bg-[#0088FF] data-active:text-white cursor-pointer shadow-sm hover:shadow active:scale-95 duration-200"
                                             >
                                                 {model.name}
                                             </TabsTrigger>
@@ -264,7 +278,7 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                             >
                                 <div className="relative z-10 w-full max-w-4xl">
                                     <div className="flex flex-col items-center">
-                                        <div className="relative w-full h-[250px] md:h-[400px]">
+                                        <div className="relative w-full h-[250px] md:h-[420px]">
                                             <Image
                                                 src={model.image}
                                                 alt={model.name}
@@ -276,29 +290,29 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                                         </div>
 
                                         {/* Specs Grid - Specific 4 columns */}
-                                        <div className="flex justify-between w-full max-w-3xl mt-4 pt-4">
+                                        <div className="flex justify-between w-full max-w-3xl mt-6 pt-6 border-t border-gray-100">
                                             <div className="flex-1 flex flex-col items-center text-center px-1 md:px-4">
-                                                <div className="text-[11px] text-gray-500 mb-1">Dòng xe</div>
-                                                <div className="text-xs md:text-sm font-bold text-gray-800">{model.type}</div>
+                                                <div className="text-[11px] md:text-xs text-gray-400 font-medium mb-1.5">Dòng xe</div>
+                                                <div className="text-xs md:text-base font-bold text-gray-800">{model.type}</div>
                                             </div>
                                             <div className="flex-1 flex flex-col items-center text-center px-1 md:px-4">
-                                                <div className="text-[11px] text-gray-500 mb-1">Số chỗ ngồi</div>
-                                                <div className="text-xs md:text-sm font-bold text-gray-800">{model.slot}</div>
+                                                <div className="text-[11px] md:text-xs text-gray-400 font-medium mb-1.5">Số chỗ ngồi</div>
+                                                <div className="text-xs md:text-base font-bold text-gray-800">{model.slot}</div>
                                             </div>
                                             <div className="flex-1 flex flex-col items-center text-center px-1 md:px-4">
-                                                <div className="text-[11px] text-gray-500 mb-1">Quãng đường</div>
-                                                <div className="text-xs md:text-sm font-bold text-gray-800">{model.distance}</div>
+                                                <div className="text-[11px] md:text-xs text-gray-400 font-medium mb-1.5">Quãng đường</div>
+                                                <div className="text-xs md:text-base font-bold text-gray-800">{model.distance}</div>
                                             </div>
                                             <div className="flex-1 flex flex-col items-center text-center px-1 md:px-4">
-                                                <div className="text-[11px] text-gray-500 mb-1">Giá chỉ từ</div>
-                                                <div className="text-xs md:text-sm font-bold text-gray-800">
+                                                <div className="text-[11px] md:text-xs text-gray-400 font-medium mb-1.5">Giá chỉ từ</div>
+                                                <div className="text-xs md:text-base font-bold text-gray-800">
                                                     {model.price_promo ? (
                                                         <span className="flex flex-col items-center">
                                                             <span className="line-through text-gray-400 text-[10px] md:text-xs font-normal mb-0.5">{model.price}</span>
-                                                            <span className="text-[#cc0000] font-bold">{model.price_promo}</span>
+                                                            <span className="text-[#cc0000] font-extrabold">{model.price_promo}</span>
                                                         </span>
                                                     ) : (
-                                                        <span>{model.price}</span>
+                                                        <span className="text-gray-800">{model.price}</span>
                                                     )}
                                                 </div>
                                             </div>
@@ -316,14 +330,14 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                                                         }),
                                                     );
                                                 }}
-                                                className="bg-[#0088FF] hover:bg-[#0066CC] text-white font-bold rounded-full px-8 h-10 text-xs shadow transition-all"
+                                                className="bg-[#0088FF] hover:bg-[#0066CC] text-white font-bold rounded-full px-10 h-12 text-sm shadow-md hover:shadow-lg active:scale-95 transition-all duration-200"
                                             >
                                                 Nhận tư vấn
                                             </Button>
                                             <Button
                                                 onClick={() => router.push(`/san-pham/${model.name.toLowerCase().replace(/ /g, "-")}`)}
                                                 variant="outline"
-                                                className="border-[#0088FF] text-[#0088FF] font-bold bg-white rounded-full px-8 h-10 text-xs hover:bg-blue-50 transition-all border-2"
+                                                className="border-[#0088FF] text-[#0088FF] font-bold bg-white rounded-full px-10 h-12 text-sm hover:bg-blue-50 transition-all border-2 active:scale-95 duration-200"
                                             >
                                                 Xem chi tiết
                                             </Button>

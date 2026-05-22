@@ -70,6 +70,11 @@ export default function AdminPage() {
     const [carIsPinned, setCarIsPinned] = useState(false);
     const [dbHasMoreInfoColumn, setDbHasMoreInfoColumn] = useState(true);
     const [carMoreInfo, setCarMoreInfo] = useState("");
+    const [dbHasPinOrderColumn, setDbHasPinOrderColumn] = useState(true);
+    const [carPinOrder, setCarPinOrder] = useState<number>(0);
+    const [dbHasMenuOrderColumn, setDbHasMenuOrderColumn] = useState(true);
+    const [localPinnedCars, setLocalPinnedCars] = useState<any[]>([]);
+    const [localMenuCars, setLocalMenuCars] = useState<any[]>([]);
     const [carForm, setCarForm] = useState({
         name: "",
         type: "",
@@ -101,6 +106,21 @@ export default function AdminPage() {
         }
     }, []);
 
+    // Sync local sorting states whenever database cars data updates
+    useEffect(() => {
+        setLocalPinnedCars(pinnedCars);
+
+        const sortedMenu = [...displayCars].sort((a, b) => {
+            const orderA = a.menu_order ?? 0;
+            const orderB = b.menu_order ?? 0;
+            if (orderA !== orderB) {
+                return orderA - orderB;
+            }
+            return a.id - b.id;
+        });
+        setLocalMenuCars(sortedMenu);
+    }, [cars]);
+
     const handlePassSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (passInput === ADMIN_PASS) {
@@ -126,6 +146,10 @@ export default function AdminPage() {
                 setDbHasPinnedColumn(hasPinnedCol);
                 const hasMoreInfoCol = cData.some(car => "more_info" in car);
                 setDbHasMoreInfoColumn(hasMoreInfoCol);
+                const hasPinOrderCol = cData.some(car => "pin_order" in car);
+                setDbHasPinOrderColumn(hasPinOrderCol);
+                const hasMenuOrderCol = cData.some(car => "menu_order" in car);
+                setDbHasMenuOrderColumn(hasMenuOrderCol);
             }
         }
 
@@ -270,6 +294,7 @@ export default function AdminPage() {
     const handleAddCarClick = () => {
         setEditingCar(null);
         setCarIsPinned(false);
+        setCarPinOrder(0);
         setCarMoreInfo("");
         setCarForm({
             name: "",
@@ -297,6 +322,7 @@ export default function AdminPage() {
     const handleEditCarClick = (car: any) => {
         setEditingCar(car);
         setCarIsPinned(!!car.is_pinned);
+        setCarPinOrder(car.pin_order || 0);
         setCarMoreInfo(car.more_info || "");
         setCarForm({
             name: car.name || "",
@@ -352,6 +378,86 @@ export default function AdminPage() {
             alert("Lỗi khi xóa: " + error.message);
         }
         setLoading(false);
+    };
+
+    const handleMoveLocalPinnedCar = (index: number, direction: "up" | "down") => {
+        const newPinned = [...localPinnedCars];
+        if (direction === "up" && index > 0) {
+            const temp = newPinned[index];
+            newPinned[index] = newPinned[index - 1];
+            newPinned[index - 1] = temp;
+        } else if (direction === "down" && index < newPinned.length - 1) {
+            const temp = newPinned[index];
+            newPinned[index] = newPinned[index + 1];
+            newPinned[index + 1] = temp;
+        } else {
+            return;
+        }
+        setLocalPinnedCars(newPinned);
+    };
+
+    const handleMoveLocalMenuCar = (index: number, direction: "up" | "down") => {
+        const newMenu = [...localMenuCars];
+        if (direction === "up" && index > 0) {
+            const temp = newMenu[index];
+            newMenu[index] = newMenu[index - 1];
+            newMenu[index - 1] = temp;
+        } else if (direction === "down" && index < newMenu.length - 1) {
+            const temp = newMenu[index];
+            newMenu[index] = newMenu[index + 1];
+            newMenu[index + 1] = temp;
+        } else {
+            return;
+        }
+        setLocalMenuCars(newMenu);
+    };
+
+    const handleSavePinnedOrder = async () => {
+        if (!dbHasPinOrderColumn) {
+            alert("Vui lòng chạy câu lệnh SQL nâng cấp trước khi thực hiện lưu!");
+            return;
+        }
+        setLoading(true);
+        try {
+            const updates = localPinnedCars.map((car, idx) => {
+                return supabase
+                    .from("cars")
+                    .update({ pin_order: idx + 1 })
+                    .eq("id", car.id);
+            });
+            await Promise.all(updates);
+            await revalidateCacheAction("cars");
+            alert("Đã lưu thứ tự ghim trang chủ thành công!");
+            fetchData();
+        } catch (error: any) {
+            alert("Lỗi khi lưu thứ tự ghim: " + error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSaveMenuOrder = async () => {
+        if (!dbHasMenuOrderColumn) {
+            alert("Vui lòng chạy câu lệnh SQL nâng cấp trước khi thực hiện lưu!");
+            return;
+        }
+        setLoading(true);
+        try {
+            const updates = localMenuCars.map((car, idx) => {
+                return supabase
+                    .from("cars")
+                    .update({ menu_order: idx + 1 })
+                    .eq("id", car.id);
+            });
+            await Promise.all(updates);
+            await revalidateCacheAction("cars");
+            alert("Đã lưu thứ tự dropdown menu thành công!");
+            fetchData();
+        } catch (error: any) {
+            alert("Lỗi khi lưu thứ tự menu: " + error.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleCarSubmit = async (e: React.FormEvent) => {
@@ -427,6 +533,13 @@ export default function AdminPage() {
 
             if (dbHasPinnedColumn) {
                 carPayload.is_pinned = carIsPinned;
+                if (dbHasPinOrderColumn) {
+                    carPayload.pin_order = carPinOrder;
+                }
+            }
+
+            if (editingCar && "menu_order" in editingCar) {
+                carPayload.menu_order = editingCar.menu_order;
             }
 
             const isCustomCar = !editingCar || !isSystemDefaultCar(carForm.name, editingCar.id);
@@ -462,6 +575,30 @@ export default function AdminPage() {
         .filter((dbCar) => !mockHomeCars.some((m) => m.id === dbCar.id))
         .sort((a, b) => a.id - b.id);
     const displayCars = [...mergedCars, ...customCars];
+    const pinnedCars = displayCars
+        .filter((car) => car.is_pinned === true)
+        .sort((a, b) => {
+            const orderA = a.pin_order ?? 0;
+            const orderB = b.pin_order ?? 0;
+            if (orderA !== orderB) {
+                return orderA - orderB;
+            }
+            return a.id - b.id;
+        });
+
+    const isPinnedOrderChanged = JSON.stringify(localPinnedCars.map(c => c.id)) !== JSON.stringify(pinnedCars.map(c => c.id));
+    const isMenuOrderChanged = JSON.stringify(localMenuCars.map(c => c.id)) !== JSON.stringify(
+        [...displayCars]
+            .sort((a, b) => {
+                const orderA = a.menu_order ?? 0;
+                const orderB = b.menu_order ?? 0;
+                if (orderA !== orderB) {
+                    return orderA - orderB;
+                }
+                return a.id - b.id;
+            })
+            .map(c => c.id)
+    );
 
     return (
         <div className="container mx-auto py-10 px-4 max-w-5xl text-[#333] relative">
@@ -651,6 +788,60 @@ export default function AdminPage() {
                             </div>
                         </div>
                     )}
+                    {!dbHasPinOrderColumn && (
+                        <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm animate-in fade-in slide-in-from-top-4 duration-300">
+                            <div className="flex items-start gap-3">
+                                <span className="text-2xl mt-0.5">⚠️</span>
+                                <div>
+                                    <h4 className="text-sm font-bold text-amber-800">Cơ sở dữ liệu của bạn thiếu cột "pin_order"</h4>
+                                    <p className="text-xs text-amber-700 mt-1 max-w-2xl leading-normal">
+                                        Để sắp xếp thứ tự xe được ghim lên Trang chủ, vui lòng truy cập **Supabase Dashboard** {"->"} **SQL Editor** và chạy câu lệnh bên phải. Hệ thống sẽ tự động kích hoạt tính năng sắp xếp ngay lập tức!
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex flex-col gap-2 min-w-[280px]">
+                                <div className="bg-amber-950/5 text-amber-900 border border-amber-950/10 font-mono text-[10px] p-2 rounded select-all whitespace-nowrap overflow-x-auto">
+                                    ALTER TABLE cars ADD COLUMN pin_order INTEGER DEFAULT 0;
+                                </div>
+                                <button 
+                                    onClick={() => {
+                                        navigator.clipboard.writeText("ALTER TABLE cars ADD COLUMN pin_order INTEGER DEFAULT 0;");
+                                        alert("Đã sao chép câu lệnh SQL!");
+                                    }}
+                                    className="bg-amber-700 hover:bg-amber-800 text-white font-bold text-[10px] uppercase py-1.5 px-3 rounded shadow transition-all self-end"
+                                >
+                                    Sao chép câu lệnh SQL
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                    {!dbHasMenuOrderColumn && (
+                        <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm animate-in fade-in slide-in-from-top-4 duration-300">
+                            <div className="flex items-start gap-3">
+                                <span className="text-2xl mt-0.5">⚠️</span>
+                                <div>
+                                    <h4 className="text-sm font-bold text-amber-800">Cơ sở dữ liệu của bạn thiếu cột "menu_order"</h4>
+                                    <p className="text-xs text-amber-700 mt-1 max-w-2xl leading-normal">
+                                        Để sắp xếp thứ tự các xe trong Menu Dropdown của sản phẩm, vui lòng truy cập **Supabase Dashboard** {"->"} **SQL Editor** và chạy câu lệnh bên phải. Hệ thống sẽ tự động kích hoạt tính năng sắp xếp menu ngay lập tức!
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex flex-col gap-2 min-w-[280px]">
+                                <div className="bg-amber-950/5 text-amber-900 border border-amber-950/10 font-mono text-[10px] p-2 rounded select-all whitespace-nowrap overflow-x-auto">
+                                    ALTER TABLE cars ADD COLUMN menu_order INTEGER DEFAULT 0;
+                                </div>
+                                <button 
+                                    onClick={() => {
+                                        navigator.clipboard.writeText("ALTER TABLE cars ADD COLUMN menu_order INTEGER DEFAULT 0;");
+                                        alert("Đã sao chép câu lệnh SQL!");
+                                    }}
+                                    className="bg-amber-700 hover:bg-amber-800 text-white font-bold text-[10px] uppercase py-1.5 px-3 rounded shadow transition-all self-end"
+                                >
+                                    Sao chép câu lệnh SQL
+                                </button>
+                            </div>
+                        </div>
+                    )}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
                         <div>
                             <h2 className="text-xl font-bold text-gray-900">Quản Lý Danh Sách Xe VinFast</h2>
@@ -665,6 +856,182 @@ export default function AdminPage() {
                             <span className="text-base font-black">+</span> Thêm Xe Mới
                         </Button>
                     </div>
+
+                    {/* Interactive Pinned Car Reordering Board */}
+                    {dbHasPinOrderColumn && (
+                        <div className="bg-gradient-to-r from-blue-50/30 via-slate-50/50 to-blue-50/20 border border-blue-100/60 rounded-xl p-5 shadow-sm">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-lg">📌</span>
+                                    <div>
+                                        <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wide">
+                                            Thứ tự hiển thị xe ghim Trang chủ
+                                        </h3>
+                                        <p className="text-[10px] text-gray-500 mt-0.5">
+                                            Thay đổi thứ tự thoải mái bên dưới rồi nhấn "Lưu thứ tự ghim" để áp dụng lên Trang chủ.
+                                        </p>
+                                    </div>
+                                </div>
+                                {isPinnedOrderChanged && (
+                                    <Button
+                                        onClick={handleSavePinnedOrder}
+                                        disabled={loading}
+                                        className="bg-[#0088FF] hover:bg-[#0066CC] text-white font-bold text-xs uppercase px-4 py-2 rounded-lg flex items-center gap-1.5 shadow-sm transition-all animate-pulse"
+                                    >
+                                        Lưu thứ tự ghim
+                                    </Button>
+                                )}
+                            </div>
+
+                            {localPinnedCars.length === 0 ? (
+                                <div className="text-center py-6 bg-white/40 border border-dashed border-gray-200 rounded-lg">
+                                    <p className="text-xs text-gray-400">
+                                        Chưa có xe nào được ghim lên Trang chủ. Nhấp vào nút "Sửa" bên dưới danh sách xe và tích chọn "Ghim lên trang chủ".
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                                    {localPinnedCars.map((car, index) => (
+                                        <div 
+                                            key={car.id} 
+                                            className="bg-white border border-gray-100 rounded-lg p-3 flex items-center justify-between shadow-sm hover:border-[#0088FF]/30 transition-all group"
+                                        >
+                                            <div className="flex items-center gap-2.5 min-w-0">
+                                                <div className="relative h-10 w-14 bg-gray-50 border border-gray-100 rounded flex-shrink-0 flex items-center justify-center overflow-hidden">
+                                                    {car.image ? (
+                                                        <Image src={car.image} alt={car.name} fill className="object-contain p-0.5" />
+                                                    ) : (
+                                                        <span className="text-[8px] text-gray-400">Không ảnh</span>
+                                                    )}
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <h4 className="font-extrabold text-xs text-gray-900 truncate uppercase tracking-tight">
+                                                        {car.name}
+                                                    </h4>
+                                                    <span className="inline-flex text-[9px] bg-blue-50 text-blue-600 border border-blue-100/50 font-bold px-1.5 py-0.5 rounded mt-1">
+                                                        Vị trí {index + 1}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center gap-1">
+                                                <button
+                                                    type="button"
+                                                    disabled={index === 0 || loading}
+                                                    onClick={() => handleMoveLocalPinnedCar(index, "up")}
+                                                    className="w-7 h-7 flex items-center justify-center rounded bg-gray-50 border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-[#0088FF] hover:border-[#0088FF]/30 disabled:opacity-30 disabled:hover:bg-gray-50 disabled:hover:text-gray-600 disabled:hover:border-gray-200 transition-all cursor-pointer"
+                                                    title="Di chuyển sang trái / lên trước"
+                                                >
+                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                                                    </svg>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    disabled={index === localPinnedCars.length - 1 || loading}
+                                                    onClick={() => handleMoveLocalPinnedCar(index, "down")}
+                                                    className="w-7 h-7 flex items-center justify-center rounded bg-gray-50 border border-gray-200 text-gray-600 hover:bg-blue-50 hover:text-[#0088FF] hover:border-[#0088FF]/30 disabled:opacity-30 disabled:hover:bg-gray-50 disabled:hover:text-gray-600 disabled:hover:border-gray-200 transition-all cursor-pointer"
+                                                    title="Di chuyển sang phải / xuống sau"
+                                                >
+                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Interactive Dropdown Menu Reordering Board */}
+                    {dbHasMenuOrderColumn && (
+                        <div className="bg-gradient-to-r from-emerald-50/30 via-slate-50/50 to-emerald-50/20 border border-emerald-100/60 rounded-xl p-5 shadow-sm mt-6">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-lg">🍔</span>
+                                    <div>
+                                        <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wide">
+                                            Thứ tự hiển thị trong Menu Dropdown Sản phẩm (Header)
+                                        </h3>
+                                        <p className="text-[10px] text-gray-500 mt-0.5">
+                                            Thay đổi thứ tự thoải mái bên dưới rồi nhấn "Lưu thứ tự menu" để áp dụng lên Header sản phẩm.
+                                        </p>
+                                    </div>
+                                </div>
+                                {isMenuOrderChanged && (
+                                    <Button
+                                        onClick={handleSaveMenuOrder}
+                                        disabled={loading}
+                                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase px-4 py-2 rounded-lg flex items-center gap-1.5 shadow-sm transition-all animate-pulse"
+                                    >
+                                        Lưu thứ tự menu
+                                    </Button>
+                                )}
+                            </div>
+
+                            {localMenuCars.length === 0 ? (
+                                <div className="text-center py-6 bg-white/40 border border-dashed border-gray-200 rounded-lg">
+                                    <p className="text-xs text-gray-400">
+                                        Không có xe nào trong danh sách.
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                                    {localMenuCars.map((car, index) => (
+                                        <div 
+                                            key={car.id} 
+                                            className="bg-white border border-gray-100 rounded-lg p-3 flex items-center justify-between shadow-sm hover:border-emerald-600/30 transition-all group"
+                                        >
+                                            <div className="flex items-center gap-2.5 min-w-0">
+                                                <div className="relative h-10 w-14 bg-gray-50 border border-gray-100 rounded flex-shrink-0 flex items-center justify-center overflow-hidden">
+                                                    {car.image ? (
+                                                        <Image src={car.image} alt={car.name} fill className="object-contain p-0.5" />
+                                                    ) : (
+                                                        <span className="text-[8px] text-gray-400">Không ảnh</span>
+                                                    )}
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <h4 className="font-extrabold text-xs text-gray-900 truncate uppercase tracking-tight">
+                                                        {car.name}
+                                                    </h4>
+                                                    <span className="inline-flex text-[9px] bg-emerald-50 text-emerald-600 border border-emerald-100/50 font-bold px-1.5 py-0.5 rounded mt-1">
+                                                        Vị trí {index + 1}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center gap-1">
+                                                <button
+                                                    type="button"
+                                                    disabled={index === 0 || loading}
+                                                    onClick={() => handleMoveLocalMenuCar(index, "up")}
+                                                    className="w-7 h-7 flex items-center justify-center rounded bg-gray-50 border border-gray-200 text-gray-600 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-600/30 disabled:opacity-30 disabled:hover:bg-gray-50 disabled:hover:text-gray-600 disabled:hover:border-gray-200 transition-all cursor-pointer"
+                                                    title="Di chuyển sang trái / lên trước"
+                                                >
+                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                                                    </svg>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    disabled={index === localMenuCars.length - 1 || loading}
+                                                    onClick={() => handleMoveLocalMenuCar(index, "down")}
+                                                    className="w-7 h-7 flex items-center justify-center rounded bg-gray-50 border border-gray-200 text-gray-600 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-600/30 disabled:opacity-30 disabled:hover:bg-gray-50 disabled:hover:text-gray-600 disabled:hover:border-gray-200 transition-all cursor-pointer"
+                                                    title="Di chuyển sang phải / xuống sau"
+                                                >
+                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                     <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                         <div className="overflow-x-auto">
@@ -1006,18 +1373,33 @@ export default function AdminPage() {
                                                 </div>
 
                                                 {dbHasPinnedColumn && (
-                                                    <div className="flex items-center gap-2.5 bg-blue-50/50 border border-blue-100/50 p-3.5 rounded-xl mt-1.5 shadow-sm">
-                                                        <input
-                                                            type="checkbox"
-                                                            id="car-is-pinned"
-                                                            checked={carIsPinned}
-                                                            onChange={(e) => setCarIsPinned(e.target.checked)}
-                                                            className="h-4 w-4 text-[#0088FF] focus:ring-[#0088FF] rounded border-gray-300 cursor-pointer"
-                                                        />
-                                                        <div className="flex flex-col cursor-pointer" onClick={() => setCarIsPinned(!carIsPinned)}>
-                                                            <span className="text-xs font-bold text-gray-800">📌 Ghim lên trang chủ (Khám phá các dòng xe VinFast)</span>
-                                                            <span className="text-[10px] text-gray-500 mt-0.5">Xe được ghim sẽ hiển thị tại các thẻ Tabs chọn trên Trang chủ</span>
+                                                    <div className="flex flex-col gap-3 bg-blue-50/50 border border-blue-100/50 p-3.5 rounded-xl mt-1.5 shadow-sm">
+                                                        <div className="flex items-center gap-2.5">
+                                                            <input
+                                                                type="checkbox"
+                                                                id="car-is-pinned"
+                                                                checked={carIsPinned}
+                                                                onChange={(e) => setCarIsPinned(e.target.checked)}
+                                                                className="h-4 w-4 text-[#0088FF] focus:ring-[#0088FF] rounded border-gray-300 cursor-pointer"
+                                                            />
+                                                            <div className="flex flex-col cursor-pointer" onClick={() => setCarIsPinned(!carIsPinned)}>
+                                                                <span className="text-xs font-bold text-gray-800">📌 Ghim lên trang chủ (Khám phá các dòng xe VinFast)</span>
+                                                                <span className="text-[10px] text-gray-500 mt-0.5">Xe được ghim sẽ hiển thị tại các thẻ Tabs chọn trên Trang chủ</span>
+                                                            </div>
                                                         </div>
+                                                        {carIsPinned && dbHasPinOrderColumn && (
+                                                            <div className="flex items-center gap-3 pt-2 border-t border-blue-100/30">
+                                                                <label className="text-xs font-semibold text-gray-700 whitespace-nowrap">Thứ tự hiển thị:</label>
+                                                                <Input
+                                                                    type="number"
+                                                                    value={carPinOrder}
+                                                                    onChange={(e) => setCarPinOrder(parseInt(e.target.value) || 0)}
+                                                                    className="h-8 w-24 text-xs px-3 bg-white"
+                                                                    min="0"
+                                                                />
+                                                                <span className="text-[10px] text-gray-500 italic">(Số nhỏ hơn hiển thị trước)</span>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 )}
 

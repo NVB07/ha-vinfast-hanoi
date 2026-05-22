@@ -17,7 +17,7 @@ export const metadata = {
 };
 
 export default async function BangGiaXePage() {
-    let cars = [];
+    let cars: any[] = [];
     try {
         const data = await getCachedCars();
         if (data) {

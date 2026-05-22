@@ -2,9 +2,9 @@ import { getCachedSliders, getCachedCars, getCachedNews } from "@/utils/supabase
 import HomeClient from "./HomeClient";
 
 export default async function Home() {
-    let sliders = [];
-    let cars = [];
-    let news = [];
+    let sliders: any[] = [];
+    let cars: any[] = [];
+    let news: any[] = [];
 
     try {
         const [slidersData, carsData, newsData] = await Promise.all([

@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { getCachedCars } from "@/utils/supabase/cached";
+import { getCachedCars, getCachedCarMoreInfo } from "@/utils/supabase/cached";
 import { mockHomeCars } from "@/utils/mockData";
 import fs from "fs";
 import path from "path";
@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         return dbCar ? { ...mockCar, ...dbCar } : mockCar;
     });
     const customCars = dbCars.filter((dbCar) => !mockHomeCars.some((m) => m.id === dbCar.id));
-    const allCars = [...mergedCars, ...customCars];
+    const allCars = [...mergedCars, ...customCars] as any[];
 
     const car = allCars.find((c) => c.name.toLowerCase().replace(/\s+/g, "-") === slug);
 
@@ -92,7 +92,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         return dbCar ? { ...mockCar, ...dbCar } : mockCar;
     });
     const customCars = dbCars.filter((dbCar) => !mockHomeCars.some((m) => m.id === dbCar.id));
-    const allCars = [...mergedCars, ...customCars];
+    const allCars = [...mergedCars, ...customCars] as any[];
 
     const car = allCars.find((c) => c.name.toLowerCase().replace(/\s+/g, "-") === slug);
 
@@ -102,6 +102,13 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 <h1 className="text-2xl font-bold text-gray-500">Không tìm thấy nhãn hiệu xe này!</h1>
             </div>
         );
+    }
+
+    // Fetch rich text detailed content (more_info & descript) on-demand to bypass the 2MB data cache limit
+    const details = await getCachedCarMoreInfo(car.id);
+    if (details) {
+        car.more_info = details.more_info;
+        car.descript = details.descript;
     }
 
     // Đọc ảnh slider từ database (Cloudinary) hoặc từ folder tương ứng (Bỏ khoảng trắng)
@@ -153,8 +160,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                         </h2>
                         <div className="h-px bg-gray-200 flex-1"></div>
                     </div>
-                    <div className="bg-white rounded-2xl border border-gray-100 shadow-md p-6 md:p-10 prose prose-blue max-w-none text-gray-700 leading-relaxed [&_h1]:text-2xl [&_h1]:font-black [&_h1]:text-gray-900 [&_h1]:mt-6 [&_h1]:mb-4 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-gray-900 [&_h2]:mt-5 [&_h2]:mb-3 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:text-gray-800 [&_h3]:mt-4 [&_h3]:mb-2 [&_p]:mb-4 [&_p]:text-sm [&_p]:md:text-base [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-4 [&_ul_li]:mb-1.5 [&_ul_li]:text-sm [&_ul_li]:md:text-base [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-4 [&_ol_li]:mb-1.5 [&_ol_li]:text-sm [&_ol_li]:md:text-base [&_strong]:font-bold [&_strong]:text-gray-900">
-                        <div dangerouslySetInnerHTML={{ __html: car.more_info }} />
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-md p-6 md:p-10 prose prose-blue max-w-none text-gray-700 leading-relaxed break-words overflow-x-auto [&_h1]:text-2xl [&_h1]:font-black [&_h1]:text-gray-900 [&_h1]:mt-6 [&_h1]:mb-4 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-gray-900 [&_h2]:mt-5 [&_h2]:mb-3 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:text-gray-800 [&_h3]:mt-4 [&_h3]:mb-2 [&_p]:mb-4 [&_p]:text-sm [&_p]:md:text-base [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-4 [&_ul_li]:mb-1.5 [&_ul_li]:text-sm [&_ul_li]:md:text-base [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-4 [&_ol_li]:mb-1.5 [&_ol_li]:text-sm [&_ol_li]:md:text-base [&_strong]:font-bold [&_strong]:text-gray-900">
+                        <div dangerouslySetInnerHTML={{ __html: car.more_info.replace(/&nbsp;/g, " ") }} />
                     </div>
                 </div>
             )}
