@@ -5,6 +5,7 @@ import Header from "@/components/layouts/Header";
 import Footer from "@/components/layouts/Footer";
 import ProgressBarProvider from "@/components/ProgressBarProvider";
 import { SITE_URL, OG_IMAGE } from "@/lib/config";
+import Script from "next/script";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -16,21 +17,37 @@ const geistMono = Geist_Mono({
     subsets: ["latin"],
 });
 
-
-
 export const metadata: Metadata = {
     metadataBase: new URL(SITE_URL),
     title: {
         default: "VinFast Hà Nội | Đại Lý Xe Điện VinFast Chính Hãng - Báo Giá & Lái Thử",
         template: "%s | VinFast Hà Nội",
     },
-    description:
-        "Đại lý phân phối xe điện VinFast chính hãng tại Hà Nội. Xem bảng giá VF 3, VF 5, VF 6, VF 7, VF 8, VF 9 mới nhất, chính sách trả góp ưu đãi, lái thử miễn phí. Liên hệ ngay để nhận báo giá tốt nhất!",
+    description: "Đại lý phân phối xe điện VinFast chính hãng tại Hà Nội. Xem bảng giá VF 3, VF 5, VF 6, VF 7, VF 8, VF 9 mới nhất, chính sách trả góp ưu đãi, lái thử miễn phí. Liên hệ ngay để nhận báo giá tốt nhất!",
     keywords: [
-        "VinFast Hà Nội", "Đại lý VinFast Hà Nội", "Mua xe VinFast", "Ô tô điện VinFast",
-        "VF 3", "VF 5", "VF 6", "VF 7", "VF 8", "VF 9", "VF3", "VF5", "VF6", "VF7", "VF8", "VF9",
-        "Bảng giá xe VinFast", "Giá lăn bánh VinFast", "VinFast trả góp", "Lái thử VinFast miễn phí",
-        "Xe điện Hà Nội", "Mua xe điện", "VinFast chính hãng",
+        "VinFast Hà Nội",
+        "Đại lý VinFast Hà Nội",
+        "Mua xe VinFast",
+        "Ô tô điện VinFast",
+        "VF 3",
+        "VF 5",
+        "VF 6",
+        "VF 7",
+        "VF 8",
+        "VF 9",
+        "VF3",
+        "VF5",
+        "VF6",
+        "VF7",
+        "VF8",
+        "VF9",
+        "Bảng giá xe VinFast",
+        "Giá lăn bánh VinFast",
+        "VinFast trả góp",
+        "Lái thử VinFast miễn phí",
+        "Xe điện Hà Nội",
+        "Mua xe điện",
+        "VinFast chính hãng",
     ],
     authors: [{ name: "VinFast Hà Nội", url: SITE_URL }],
     creator: "VinFast Hà Nội",
@@ -76,7 +93,6 @@ export const metadata: Metadata = {
     },
 };
 
-
 const jsonLd = {
     "@context": "https://schema.org",
     "@type": "AutoDealer",
@@ -110,10 +126,7 @@ const jsonLd = {
             closes: "17:30",
         },
     ],
-    sameAs: [
-        "https://www.facebook.com/vinfasthanoi",
-        "https://www.youtube.com/@VinFast",
-    ],
+    sameAs: ["https://www.facebook.com/vinfasthanoi", "https://www.youtube.com/@VinFast"],
     priceRange: "ƯƯƯ",
     servesCuisine: undefined,
     areaServed: {
@@ -130,12 +143,20 @@ export default function RootLayout({
     return (
         <html lang="vi" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
             <head>
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-                />
+                <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
             </head>
             <body className="min-h-full flex flex-col font-sans antialiased text-[#333]">
+                {/* Google Analytics 4 */}
+                <Script src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`} strategy="afterInteractive" />
+                <Script id="google-analytics" strategy="afterInteractive">
+                    {`
+                        window.dataLayer = window.dataLayer || [];
+                        function gtag(){dataLayer.push(arguments);}
+                        gtag('js', new Date());
+                        gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
+                    `}
+                </Script>
+
                 <ProgressBarProvider />
                 <Header />
                 {children}
