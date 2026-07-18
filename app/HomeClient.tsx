@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { toSlug, stripHtml } from "@/utils/slug";
 import { createClient } from "@/utils/supabase/client";
 
-import { Carousel, CarouselContent, CarouselItem, useCarousel } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext, useCarousel, type CarouselApi } from "@/components/ui/carousel";
 
 interface HomeClientProps {
     sliders: any[];
@@ -91,6 +91,32 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
     const displayCars = pinnedCars.length > 0 ? pinnedCars : initialCars;
 
     const router = useRouter();
+    const [activeTab, setActiveTab] = useState(
+        displayCars.length > 0 ? displayCars[0].name.toLowerCase().replace(/ /g, "") : "vf3"
+    );
+    const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
+
+    useEffect(() => {
+        if (!carouselApi) return;
+
+        const onSelect = () => {
+            const index = carouselApi.selectedScrollSnap();
+            if (displayCars[index]) {
+                const modelName = displayCars[index].name.toLowerCase().replace(/ /g, "");
+                setActiveTab(modelName);
+            }
+        };
+
+        carouselApi.on("select", onSelect);
+        return () => {
+            carouselApi.off("select", onSelect);
+        };
+    }, [carouselApi, displayCars]);
+
+    const activeModel = displayCars.find(
+        (model) => model.name.toLowerCase().replace(/ /g, "") === activeTab
+    ) || displayCars[0];
+
     const [showContactDialog, setShowContactDialog] = useState(false);
     const [contactInfo, setContactInfo] = useState({ phone: "0345726001", zalo: "0345726001" });
 
@@ -237,7 +263,21 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                         Lựa chọn dòng xe ô tô điện thông minh thế hệ mới phù hợp với phong cách và nhu cầu của bạn
                     </p>
 
-                    <Tabs defaultValue={displayCars.length > 0 ? displayCars[0].name.toLowerCase().replace(/ /g, "") : "vf3"} className="w-full">
+                    <Tabs
+                        value={activeTab}
+                        onValueChange={(val) => {
+                            if (val) {
+                                setActiveTab(val);
+                                const index = displayCars.findIndex(
+                                    (model) => model.name.toLowerCase().replace(/ /g, "") === val
+                                );
+                                if (index !== -1 && carouselApi) {
+                                    carouselApi.scrollTo(index);
+                                }
+                            }
+                        }}
+                        className="w-full"
+                    >
                         <div className="flex flex-col items-center mb-8">
                             {/* Unified TabsList for proper Context Management in Base-UI */}
                             <TabsList className="bg-transparent !h-auto min-h-fit p-0 flex flex-col items-center gap-2.5 md:gap-4 mb-6 w-full">
@@ -270,82 +310,99 @@ export default function HomeClient({ sliders, cars, news }: HomeClientProps) {
                             </TabsList>
                         </div>
 
-                        {displayCars.map((model) => (
-                            <TabsContent
-                                key={model.id}
-                                value={model.name.toLowerCase().replace(/ /g, "")}
-                                className="relative flex flex-col items-center justify-center animate-in fade-in duration-500"
+                        <div className="relative w-full max-w-4xl mx-auto px-4 sm:px-8 md:px-12 group/car-carousel">
+                            <Carousel
+                                setApi={setCarouselApi}
+                                opts={{
+                                    align: "start",
+                                    loop: true,
+                                }}
+                                className="w-full"
                             >
-                                <div className="relative z-10 w-full max-w-4xl">
-                                    <div className="flex flex-col items-center">
-                                        <div className="relative w-full h-[250px] md:h-[420px]">
-                                            <Image
-                                                src={model.image}
-                                                alt={model.name}
-                                                fill
-                                                className="object-contain"
-                                                sizes="(max-width: 768px) 100vw, 800px"
-                                                loading="lazy"
-                                            />
-                                        </div>
+                                <CarouselContent>
+                                    {displayCars.map((model) => {
+                                        const isCurrent = model.name.toLowerCase().replace(/ /g, "") === activeTab;
+                                        return (
+                                            <CarouselItem key={model.id} className="w-full">
+                                                <div className="flex flex-col items-center">
+                                                    <div className="relative w-full h-[250px] md:h-[420px]">
+                                                        <Image
+                                                            src={model.image}
+                                                            alt={model.name}
+                                                            fill
+                                                            className="object-contain"
+                                                            sizes="(max-width: 768px) 100vw, 800px"
+                                                            priority={isCurrent}
+                                                            loading={isCurrent ? "eager" : "lazy"}
+                                                        />
+                                                    </div>
 
-                                        {/* Specs Grid - Specific 4 columns */}
-                                        <div className="flex justify-between w-full max-w-3xl mt-6 pt-6 border-t border-gray-100">
-                                            <div className="flex-1 flex flex-col items-center text-center px-1 md:px-4">
-                                                <div className="text-[11px] md:text-xs text-gray-400 font-medium mb-1.5">Dòng xe</div>
-                                                <div className="text-xs md:text-base font-bold text-gray-800">{model.type}</div>
-                                            </div>
-                                            <div className="flex-1 flex flex-col items-center text-center px-1 md:px-4">
-                                                <div className="text-[11px] md:text-xs text-gray-400 font-medium mb-1.5">Số chỗ ngồi</div>
-                                                <div className="text-xs md:text-base font-bold text-gray-800">{model.slot}</div>
-                                            </div>
-                                            <div className="flex-1 flex flex-col items-center text-center px-1 md:px-4">
-                                                <div className="text-[11px] md:text-xs text-gray-400 font-medium mb-1.5">Quãng đường</div>
-                                                <div className="text-xs md:text-base font-bold text-gray-800">{model.distance}</div>
-                                            </div>
-                                            <div className="flex-1 flex flex-col items-center text-center px-1 md:px-4">
-                                                <div className="text-[11px] md:text-xs text-gray-400 font-medium mb-1.5">Giá chỉ từ</div>
-                                                <div className="text-xs md:text-base font-bold text-gray-800">
-                                                    {model.price_promo ? (
-                                                        <span className="flex flex-col items-center">
-                                                            <span className="line-through text-gray-400 text-[10px] md:text-xs font-normal mb-0.5">{model.price}</span>
-                                                            <span className="text-[#cc0000] font-extrabold">{model.price_promo}</span>
-                                                        </span>
-                                                    ) : (
-                                                        <span className="text-gray-800">{model.price}</span>
-                                                    )}
+                                                    {/* Specs Grid - Specific 4 columns */}
+                                                    <div className="flex justify-between w-full max-w-3xl mt-6 pt-6 border-t border-gray-100">
+                                                        <div className="flex-1 flex flex-col items-center text-center px-1 md:px-4">
+                                                            <div className="text-[11px] md:text-xs text-gray-400 font-medium mb-1.5">Dòng xe</div>
+                                                            <div className="text-xs md:text-base font-bold text-gray-800">{model.type}</div>
+                                                        </div>
+                                                        <div className="flex-1 flex flex-col items-center text-center px-1 md:px-4">
+                                                            <div className="text-[11px] md:text-xs text-gray-400 font-medium mb-1.5">Số chỗ ngồi</div>
+                                                            <div className="text-xs md:text-base font-bold text-gray-800">{model.slot}</div>
+                                                        </div>
+                                                        <div className="flex-1 flex flex-col items-center text-center px-1 md:px-4">
+                                                            <div className="text-[11px] md:text-xs text-gray-400 font-medium mb-1.5">Quãng đường</div>
+                                                            <div className="text-xs md:text-base font-bold text-gray-800">{model.distance}</div>
+                                                        </div>
+                                                        <div className="flex-1 flex flex-col items-center text-center px-1 md:px-4">
+                                                            <div className="text-[11px] md:text-xs text-gray-400 font-medium mb-1.5">Giá chỉ từ</div>
+                                                            <div className="text-xs md:text-base font-bold text-gray-800">
+                                                                {model.price_promo ? (
+                                                                    <span className="flex flex-col items-center">
+                                                                        <span className="line-through text-gray-400 text-[10px] md:text-xs font-normal mb-0.5">{model.price}</span>
+                                                                        <span className="text-[#cc0000] font-extrabold">{model.price_promo}</span>
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="text-gray-800">{model.price}</span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        {/* CTAs */}
-                                        <div className="flex gap-4 mt-12">
-                                            <Button
-                                                onClick={() => {
-                                                    window.dispatchEvent(
-                                                        new CustomEvent("open-global-promo", {
-                                                            detail: {
-                                                                title: `Nhận tư vấn ${model.name}`,
-                                                                car: model.name,
-                                                            },
-                                                        }),
-                                                    );
-                                                }}
-                                                className="bg-[#0088FF] hover:bg-[#0066CC] text-white font-bold rounded-full px-10 h-12 text-sm shadow-md hover:shadow-lg active:scale-95 transition-all duration-200"
-                                            >
-                                                Nhận tư vấn
-                                            </Button>
-                                            <Button
-                                                onClick={() => router.push(`/san-pham/${model.name.toLowerCase().replace(/ /g, "-")}`)}
-                                                variant="outline"
-                                                className="border-[#0088FF] text-[#0088FF] font-bold bg-white rounded-full px-10 h-12 text-sm hover:bg-blue-50 transition-all border-2 active:scale-95 duration-200"
-                                            >
-                                                Xem chi tiết
-                                            </Button>
-                                        </div>
-                                    </div>
+                                            </CarouselItem>
+                                        );
+                                    })}
+                                </CarouselContent>
+
+                                <CarouselPrevious className="absolute left-2 md:-left-12 top-[125px] md:top-[210px] -translate-y-1/2 z-20 bg-white/80 hover:bg-white text-gray-800 border border-gray-200 shadow-md hover:scale-105 transition-all duration-200 w-10 h-10 md:w-12 md:h-12 rounded-full cursor-pointer" />
+                                <CarouselNext className="absolute right-2 md:-right-12 top-[125px] md:top-[210px] -translate-y-1/2 z-20 bg-white/80 hover:bg-white text-gray-800 border border-gray-200 shadow-md hover:scale-105 transition-all duration-200 w-10 h-10 md:w-12 md:h-12 rounded-full cursor-pointer" />
+                            </Carousel>
+
+                            {/* Static CTAs outside the Carousel */}
+                            {activeModel && (
+                                <div className="flex gap-4 mt-12 justify-center">
+                                    <Button
+                                        onClick={() => {
+                                            window.dispatchEvent(
+                                                new CustomEvent("open-global-promo", {
+                                                    detail: {
+                                                        title: `Nhận tư vấn ${activeModel.name}`,
+                                                        car: activeModel.name,
+                                                    },
+                                                }),
+                                            );
+                                        }}
+                                        className="bg-[#0088FF] hover:bg-[#0066CC] text-white font-bold rounded-full px-10 h-12 text-sm shadow-md hover:shadow-lg active:scale-95 transition-all duration-200"
+                                    >
+                                        Nhận tư vấn
+                                    </Button>
+                                    <Button
+                                        onClick={() => router.push(`/san-pham/${activeModel.name.toLowerCase().replace(/ /g, "-")}`)}
+                                        variant="outline"
+                                        className="border-[#0088FF] text-[#0088FF] font-bold bg-white rounded-full px-10 h-12 text-sm hover:bg-blue-50 transition-all border-2 active:scale-95 duration-200"
+                                    >
+                                        Xem chi tiết
+                                    </Button>
                                 </div>
-                            </TabsContent>
-                        ))}
+                            )}
+                        </div>
                     </Tabs>
                 </div>
             </section>
